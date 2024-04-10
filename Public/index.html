@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="pt">
+  <head>
+      <meta charset="utf-8" />
+      <meta name="viewport" content="width=device-width,initial-scale=1" />
+      <title>SIDIC</title>
+
+      <link rel="stylesheet" href="https://www.markuptag.com/bootstrap/5/css/bootstrap.min.css"/>
+      <link rel="stylesheet" href="https://pyscript.net/releases/2024.3.1/core.css">
+
+      <script type="module" src="https://pyscript.net/releases/2024.3.1/core.js"></script>
+
+      <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.10.2/css/all.css"/>
+      <link rel="stylesheet" href="Styles/index.css"/> 
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top solid bg-dark" id="navbar">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="#" onclick="showSection('home')">ChatFlow</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarMoviesDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                Sobre nós
+              </a>
+              <ul class="dropdown-menu dropdown-menu-light" aria-labelledby="navbarMoviesDropdown">
+                <li><a class="dropdown-item" href="#" onclick="getMovies('popular', '1');showSection('movies')">Linguagens usadas</a></li>
+                <li><a class="dropdown-item" href="#" onclick="getMovies('top', '1');showSection('movies')">Equipa</a></li>
+                <li><a class="dropdown-item" href="#" onclick="getMovies('upcoming', '1');showSection('movies')">Objetivos</a></li>
+                <li><a class="dropdown-item" href="#" onclick="getMovies('upcoming', '1');showSection('movies')">Manual de utilizador</a></li>
+              </ul>
+            </li>
+
+            <li class="nav-item">
+              <a class="nav-link loggedIn" href="#" onclick="getUser();showSection('user')">User</a>
+            </li>
+          </ul>
+
+          <form class="loggedOut">
+            <button class="btn btn-primary me-2" id="btnNavLogin" type="button">Login</button>
+            <button class="btn btn-secondary me-2" id="btnNavSignup" type="button">Signup</button>
+          </form>
+
+          <form class="loggedIn">
+            <span class="navbar-text me-2" id="userLogged">
+              user@email.com
+            </span>
+            <button class="btn btn-warning me-2" id="btnNavlogout" type="button" onclick="delLogout()">Logout</button>
+          </form>
+
+        </div>
+      </div>
+    </nav>
+    
+    <!-- Modal para Signup novo utilizador -->
+    <!-- se retirar o data-bs-backdrop, o modal desaparece ao clicar no fundo da página -->
+    <div class="modal fade" id="modalSignup" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" data-bs-backdrop="static">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">
+              Registo de novo utilizador
+            </h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <div class="mb-3">
+              <label class="form-label">E-Mail</label>
+              <input type="email" class="form-control" id="usernameSignup" name="usernameSignup" placeholder="E-Mail"/>
+              <p id="emailErroLoginSignup"></p>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Senha</label>
+              <input type="password" class="form-control" id="senhaSignup" name="senhaSignup" placeholder="Senha"/>
+              <p id="statusSignup"></p>
+            </div>
+            <div class="modal-footer d-block">
+                <p id="pLogin" class="float-start">
+                    Já tem conta? <a href="#">Entre</a>
+                </p>
+              <button id="btnCancelaSignup" class="btn btn-warning float-end" data-bs-dismiss="modal">
+                Cancelar
+              </button>
+              <button class="btn btn-success float-end" id="btnSubmitSignup" onclick="postSignup()" data-bs-dismiss="modal">
+                Signup
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal para fazer login -->
+    <!-- se retirar o data-bs-backdrop, o modal desaparece ao clicar no fundo da página -->
+    <div class="modal fade" id="modalLogin" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" data-bs-backdrop="static">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">
+              Insira suas credenciais
+            </h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="btnLoginClose"></button>
+          </div>
+          <div class="modal-body">
+            <div class="mb-3">
+              <label class="form-label">E-Mail</label>
+              <input type="email" class="form-control" id="usernameLogin" name="usernameLogin" placeholder="E-Mail"/>
+              <p id="emailErroLogin"></p>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Senha</label>
+              <input type="password" class="form-control" id="senhaLogin" name="senhaLogin" placeholder="Senha"/>
+              <p id="passErroLogin"></p>
+              <p id="statusLogin"></p>
+            </div>
+            <div class="mb-3 form-check">
+              <input type="checkbox" class="form-check-input" id="rememberMe"/>
+              <label class="form-check-label" for="rememberMe">Lembrar-me</label>
+            </div>
+            <div class="modal-footer d-block">
+              <p id="pSignup" class="float-start">
+                Sem conta ainda? <a href="#">Registe-se</a>
+              </p>
+              <button class="btn btn-warning float-end" data-bs-dismiss="modal">
+                Cancelar
+              </button>
+              <button class="btn btn-success float-end" id="btnSubmitLogin" onclick="postLogin()" data-bs-dismiss="modal">
+                Login
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://www.markuptag.com/bootstrap/5/js/bootstrap.bundle.min.js"></script>
+    <script src="js/index.js"></script>
+    
+  </body>
+</html>
