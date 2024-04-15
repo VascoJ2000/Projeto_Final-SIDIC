@@ -30,3 +30,8 @@ class Controller:
         pass
 
     # Auth routes
+    def create_access_token(self):
+        pass
+
+    def create_refresh_token(self):
+        pass

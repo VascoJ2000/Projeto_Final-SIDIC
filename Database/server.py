@@ -16,3 +16,7 @@ class DataLayerServer(Server):
         self.app.route('/', methods=['POST'])(self.controller.add_entry)
         self.app.route('/', methods=['PUT'])(self.controller.update_entry)
         self.app.route('/', methods=['DELETE'])(self.controller.delete_entry)
+
+        # Auth Routes
+        self.app.route('/token/access', methods=['GET'])(self.controller.create_access_token)
+        self.app.route('/token/refresh', methods=['GET'])(self.controller.create_refresh_token)

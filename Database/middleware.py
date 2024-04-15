@@ -1,4 +1,5 @@
 from flask import request, Response, g
+from functools import wraps
 import jwt
 from dotenv import load_dotenv
 import os
@@ -6,48 +7,43 @@ import os
 load_dotenv()
 
 
-class JWTMiddleware:
-    def __init__(self, app):
-        self.app = app
-
-    def __call__(self, environ, start_response):
-        header = request.headers
+def auth_access(func):
+    @wraps(func)
+    def _auth_access(*args, **kwargs):
         try:
-            request.decoded_jwt = authenticate(header)
+            token = authorization_verify(request.headers)
+            g.decoded = token_verify(token, os.getenv('SECRET_KEY_SD'))
         except Exception as e:
-            start_response('401 Unauthorized', [])
-            return [bytes(str(e), 'utf-8')]
-        return self.app(environ, start_response)
+            return Response('401 Unauthorized', str(e))
+        return _auth_access
 
 
-def authenticate(header):
+def auth_refresh(func):
+    @wraps(func)
+    def _auth_refresh(*args, **kwargs):
+        try:
+            token = authorization_verify(request.headers)
+            g.decoded = token_verify(token, os.getenv('SECRET_KEY_SD'))
+        except Exception as e:
+            return Response('401 Unauthorized', str(e))
+        return _auth_refresh
+
+
+def authorization_verify(header):
     if 'Authorization' in header:
         auth_header = header.get('Authorization')
         token = auth_header.split(' ')[1]
     else:
         raise Exception('No authorization header')
-    decoded = access_token_verify(token)
-    return decoded
+    return token
 
 
-def access_token_verify(token):
+def token_verify(token, key):
     try:
-        token_decoded = jwt.decode(token, os.getenv('SECRET_KEY_SD'), algorithms='HS256')
+        token_decoded = jwt.decode(token, key, algorithms='HS256')
     except jwt.ExpiredSignatureError:
         raise Exception("Token has expired")
     except jwt.InvalidTokenError as e:
         raise Exception("Token is Invalid: " + str(e))
     else:
         return token_decoded
-
-
-def refresh_token_verify(token):
-    pass
-
-
-def create_access_token(token):
-    pass
-
-
-def create_refresh_token(token):
-    pass
