@@ -11,9 +11,8 @@ class DataLayerServer(Server):
         self.run_server()
 
     def setup_routes(self):
-        # User Routes
-        self.app.route('/user/<user_id>&<email>', methods=['GET'])(self.controller.get_user)
-        self.app.route('/user', methods=['POST'])(self.controller.add_user)
-        self.app.route('/user', methods=['PUT'])(self.controller.update_user)
-        self.app.route('/user', methods=['DELETE'])(self.controller.delete_user)
-
+        # Common Routes
+        self.app.route('/<collection>&<identifier>&<entry_id>', methods=['GET'])(self.controller.get_entry)
+        self.app.route('/', methods=['POST'])(self.controller.add_entry)
+        self.app.route('/', methods=['PUT'])(self.controller.update_entry)
+        self.app.route('/', methods=['DELETE'])(self.controller.delete_entry)
