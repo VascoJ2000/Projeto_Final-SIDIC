@@ -1,5 +1,3 @@
-from Shared.Abstract.auth_controller import AuthController
-from Shared.Abstract.base_controller import BaseController
 from Database.db import DB
 from dotenv import load_dotenv
 import os
@@ -7,9 +5,8 @@ import os
 load_dotenv()
 
 
-class Controller(AuthController, BaseController):
+class Controller:
     def __init__(self):
-        super().__init__()
         try:
             self.db = DB(os.getenv('DB_CLIENT'), os.getenv('DB_CONNECT'))
         except Exception as e:
@@ -19,22 +16,17 @@ class Controller(AuthController, BaseController):
             except Exception as e:
                 print('Erro: ' + str(e))
 
-    # Authentication methods
-    def login(self, email, password):
+    # Common routes
+    def get_entry(self, collection, identifier, entry_id):
         pass
 
-    def token(self):
+    def add_entry(self, collection, entry):
         pass
 
-    # User methods
-    def get_user(self, user_id, email):
+    def delete_entry(self, collection, identifier, entry_id):
         pass
 
-    def add_user(self):
+    def update_entry(self, collection, identifier, entry_id, field, new_value):
         pass
 
-    def update_user(self):
-        pass
-
-    def delete_user(self):
-        pass
+    # Auth routes
