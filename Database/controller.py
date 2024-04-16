@@ -1,5 +1,5 @@
 from Database.db import DB
-from flask import request, Response, g
+from Shared.middleware import auth
 from dotenv import load_dotenv
 import os
 
@@ -18,21 +18,27 @@ class Controller:
                 print('Erro: ' + str(e))
 
     # Common routes
+    @auth(os.getenv('SECRET_KEY_SD'))
     def get_entry(self, collection, identifier, entry_id):
         pass
 
+    @auth(os.getenv('SECRET_KEY_SD'))
     def add_entry(self, collection, entry):
         pass
 
+    @auth(os.getenv('SECRET_KEY_SD'))
     def delete_entry(self, collection, identifier, entry_id):
         pass
 
+    @auth(os.getenv('SECRET_KEY_SD'))
     def update_entry(self, collection, identifier, entry_id, field, new_value):
         pass
 
     # Auth routes
+    @auth(os.getenv('SECRET_KEY_SD_REFRESH'))
     def create_access_token(self):
         pass
 
+    @auth(os.getenv('SECRET_KEY_SD_REFRESH'))
     def create_refresh_token(self):
         pass

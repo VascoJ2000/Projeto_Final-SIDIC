@@ -1,23 +1,13 @@
 from flask import request, Response, g
 from functools import wraps
 import jwt
-from dotenv import load_dotenv
-import os
-
-load_dotenv()
 
 
-def auth(func):
-    @wraps(func)
+def auth(key):
+    @wraps(key)
     def _auth(*args, **kwargs):
         try:
             token = authorization_verify(request.headers)
-            if request.path.startswith('/token/refresh'):
-                key = os.getenv('SECRET_KEY_SD')
-            elif request.path.startswith('/'):
-                key = os.getenv('SECRET_KEY_SD')
-            else:
-                return _auth
             g.decoded = token_verify(token, key)
         except Exception as e:
             return Response('401 Unauthorized', str(e))
