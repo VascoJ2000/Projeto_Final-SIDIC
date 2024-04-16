@@ -7,26 +7,21 @@ import os
 load_dotenv()
 
 
-def auth_access(func):
+def auth(func):
     @wraps(func)
-    def _auth_access(*args, **kwargs):
+    def _auth(*args, **kwargs):
         try:
             token = authorization_verify(request.headers)
-            g.decoded = token_verify(token, os.getenv('SECRET_KEY_SD'))
+            if request.path.startswith('/token/refresh'):
+                key = os.getenv('SECRET_KEY_SD')
+            elif request.path.startswith('/'):
+                key = os.getenv('SECRET_KEY_SD')
+            else:
+                return _auth
+            g.decoded = token_verify(token, key)
         except Exception as e:
             return Response('401 Unauthorized', str(e))
-        return _auth_access
-
-
-def auth_refresh(func):
-    @wraps(func)
-    def _auth_refresh(*args, **kwargs):
-        try:
-            token = authorization_verify(request.headers)
-            g.decoded = token_verify(token, os.getenv('SECRET_KEY_SD'))
-        except Exception as e:
-            return Response('401 Unauthorized', str(e))
-        return _auth_refresh
+        return _auth
 
 
 def authorization_verify(header):
