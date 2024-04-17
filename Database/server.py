@@ -7,7 +7,8 @@ class DataLayerServer(Server):
     def __init__(self):
         self.controller = Controller()
         super().__init__()
-        self.connect_to_balancer(os.getenv('DB_LOAD_BALANCER_IP'), os.getenv('DB_LOAD_BALANCER_PORT'))
+        # TODO: Verify load balancer
+        # self.connect_to_balancer(os.getenv('DB_LOAD_BALANCER_IP'), os.getenv('DB_LOAD_BALANCER_PORT'))
         self.run_server()
 
     def setup_routes(self):
@@ -18,5 +19,7 @@ class DataLayerServer(Server):
         self.app.route('/', methods=['DELETE'])(self.controller.delete_entry)
 
         # Auth Routes
-        self.app.route('/token/access', methods=['GET'])(self.controller.create_access_token)
-        self.app.route('/token/refresh', methods=['GET'])(self.controller.create_refresh_token)
+        self.app.route('/token', methods=['POST'])(self.controller.create_access_token)
+        self.app.route('/key', methods=['GET'])(self.controller.create_temp_key)
+
+data_layer = DataLayerServer()
