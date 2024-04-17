@@ -3,6 +3,8 @@ from Shared.middleware import auth
 from flask import request, Response, g
 from dotenv import load_dotenv
 from pymongo import errors
+import jwt
+import secrets
 import os
 
 load_dotenv()
@@ -20,7 +22,7 @@ class Controller:
                 print('Erro: ' + str(e))
 
     # Common routes
-    @auth(os.getenv('SECRET_KEY_SD'))
+    @auth(key=os.getenv('SECRET_KEY_SD'))
     def get_entry(self, collection, query):
         try:
             coll = self.db.db.collection[collection]
@@ -29,29 +31,39 @@ class Controller:
             return Response('404 Not Found', str(e))
         return Response(doc, mimetype='application/json'), 201
 
-    @auth(os.getenv('SECRET_KEY_SD'))
-    def add_entry(self, collection, query):
+    @auth(key=os.getenv('SECRET_KEY_SD'))
+    def add_entry(self):
         try:
+            request_json = request.get_json()
+            collection = request_json['collection']
+            query = request_json['query']
             coll = self.db.db.collection[collection]
             coll.insert_one(query)
         except errors.CollectionInvalid as e:
             return Response('404 Not Found', str(e))
         except Exception as e:
-            return Response('400 Not Found', str(e))
+            return Response('400 Bad Request', str(e))
         return Response('201 Created')
 
-    @auth(os.getenv('SECRET_KEY_SD'))
-    def delete_entry(self, collection, query):
+    @auth(key=os.getenv('SECRET_KEY_SD'))
+    def delete_entry(self):
         try:
+            request_json = request.get_json()
+            collection = request_json['collection']
+            query = request_json['query']
             coll = self.db.db.collection[collection]
             coll.delete_many(query)
         except Exception as e:
             return Response('400 Not Found', str(e))
         return Response('200 OK')
 
-    @auth(os.getenv('SECRET_KEY_SD'))
-    def update_entry(self, collection, query, new_values):
+    @auth(key=os.getenv('SECRET_KEY_SD'))
+    def update_entry(self):
         try:
+            request_json = request.get_json()
+            collection = request_json['collection']
+            query = request_json['query']
+            new_values = request_json['new_values']
             coll = self.db.db.collection[collection]
             coll.update_one(query, new_values)
         except Exception as e:
@@ -59,9 +71,38 @@ class Controller:
         return Response('200 OK')
 
     # Auth routes
-    @auth(os.getenv('SECRET_KEY_SD_REFRESH'))
     def create_access_token(self):
-        pass
+        try:
+            ip_client = request.remote_addr
+            coll = self.db.db.collection['Servers']
+            query = {'ip': ip_client}
+            doc = coll.find({}, query)
+            if doc == {}:
+                return Response('403 Forbidden', 'IP does not match allowed connections')
 
-    def create_refresh_token(self):
-        pass
+            token_data = request.get_json()['Token']
+            key = doc[0]['Key']
+            decoded = jwt.decode(token_data, key=key, algorithms=['HS256'])
+            new_key = decoded['new_key']
+            new_values = {'Key': new_key}
+            coll.update_one(query, new_values)
+
+            server_type = decoded['server_type']
+            token = {'ip': ip_client, 'server_type': server_type}
+            access_token = jwt.encode(token, os.getenv('SECRET_KEY_SD'), algorithm='HS256')
+        except Exception as e:
+            return Response('400 Bad Request', str(e))
+        return Response(access_token, mimetype='application/json'), 201
+
+    def create_temp_key(self):
+        try:
+            ip_client = request.remote_addr
+            coll = self.db.db.collection['Servers']
+            query = {'ip': ip_client}
+            tmp_key = secrets.token_urlsafe(32)
+            new_values = {'Key': tmp_key}
+            coll.update_one(query, new_values)
+            token = jwt.encode(new_values, os.getenv('SECRET_KEY_SD'), algorithm='HS256')
+        except Exception as e:
+            return Response('404 Not Found', str(e))
+        return Response(token, mimetype='application/json'), 201

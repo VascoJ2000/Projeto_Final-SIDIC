@@ -3,15 +3,17 @@ from functools import wraps
 import jwt
 
 
-def auth(key):
-    @wraps(key)
-    def _auth(*args, **kwargs):
-        try:
-            g.token = authorization_verify(request.headers)
-            g.decoded = token_verify(g.token, key)
-        except Exception as e:
-            return Response('401 Unauthorized', str(e))
-        return _auth
+def auth(*args, **kwargs):
+    def _auth(func):
+        @wraps(func)
+        def __auth():
+            try:
+                g.token = authorization_verify(request.headers)
+                g.decoded = token_verify(g.token, kwargs['key'])
+            except Exception as e:
+                return Response('401 Unauthorized', str(e))
+        return __auth
+    return _auth
 
 
 def authorization_verify(header):
