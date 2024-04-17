@@ -7,8 +7,8 @@ def auth(key):
     @wraps(key)
     def _auth(*args, **kwargs):
         try:
-            token = authorization_verify(request.headers)
-            g.decoded = token_verify(token, key)
+            g.token = authorization_verify(request.headers)
+            g.decoded = token_verify(g.token, key)
         except Exception as e:
             return Response('401 Unauthorized', str(e))
         return _auth
