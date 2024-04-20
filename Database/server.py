@@ -13,13 +13,10 @@ class DataLayerServer(Server):
 
     def setup_routes(self):
         # Common Routes
-        self.app.route('/<collection>&<entry_id>', methods=['GET'])(self.controller.get_entry)
+        self.app.route('/<coll>&<entry_id>', methods=['GET'])(self.controller.get_entry)
+        self.app.route('/all/<coll>', methods=['GET'])(self.controller.get_all_entries)
         self.app.route('/', methods=['POST'])(self.controller.add_entry)
         self.app.route('/', methods=['PUT'])(self.controller.update_entry)
-        self.app.route('/', methods=['DELETE'])(self.controller.delete_entry)
-
-        # Auth Routes
-        self.app.route('/token', methods=['POST'])(self.controller.create_access_token)
-        self.app.route('/key', methods=['GET'])(self.controller.create_temp_key)
+        self.app.route('/<coll>&<entry_id>', methods=['DELETE'])(self.controller.delete_entry)
 
 data_layer = DataLayerServer()

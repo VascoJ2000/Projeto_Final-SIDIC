@@ -19,7 +19,7 @@ class DLBLController(ABC):
         pass
 
     @abstractmethod
-    def delete_entry(self):
+    def delete_entry(self, coll, entry_id):
         pass
 
 

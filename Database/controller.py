@@ -1,8 +1,9 @@
 from Database.client import Client
-from Shared.Abstract.base_controller import DLBLController
+from Shared.Abstract import DLBLController
 from flask import request, Response, g
 from dotenv import load_dotenv
 from pymongo import errors
+from bson import ObjectId
 import json
 import os
 
@@ -22,46 +23,46 @@ class Controller(DLBLController):
                 print('Erro: ' + str(e))
 
     # Common routes
-    def get_entry(self, collection, entry_id):
+    def get_entry(self, coll, entry_id):
         try:
-            coll = self.client.db.collection[collection]
-            doc = list(coll.find({'ip': entry_id}))
+            doc = list(self.client.db[coll].find({'_id': ObjectId(entry_id)}))
         except Exception as e:
             return Response(str(e), status=404)
-        return Response(json.dumps({'doc': doc}), status=201, mimetype='application/json')
+        return Response(json.dumps({'doc': str(doc)}), status=201, mimetype='application/json')
+
+    def get_all_entries(self, coll):
+        try:
+            doc = list(self.client.db[coll].find({}))
+        except Exception as e:
+            return Response(str(e), status=404)
+        return Response(json.dumps({'doc': str(doc)}), status=201, mimetype='application/json')
 
     def add_entry(self):
         try:
             request_json = request.get_json()
-            collection = request_json['collection']
+            coll = request_json['coll']
             query = request_json['query']
-            coll = self.client.db.collection[collection]
-            coll.insert_one(query)
+            doc_id = self.client.db[coll].insert_one(query).inserted_id
         except errors.CollectionInvalid as e:
             return Response(str(e), status=404)
         except Exception as e:
             return Response(str(e), status=400)
-        return Response('201 Created', status=201)
-
-    def delete_entry(self):
-        try:
-            request_json = request.get_json()
-            collection = request_json['collection']
-            query = request_json['query']
-            coll = self.client.db.collection[collection]
-            coll.delete_many(query)
-        except Exception as e:
-            return Response(str(e), status=400)
-        return Response('200 OK', status=200)
+        return Response(str(doc_id), status=201)
 
     def update_entry(self):
         try:
             request_json = request.get_json()
-            collection = request_json['collection']
-            query = request_json['query']
+            coll = request_json['coll']
+            entry_id = request_json['entry_id']
             new_values = request_json['new_values']
-            coll = self.client.db.collection[collection]
-            coll.update_one(query, new_values)
+            updated = self.client.db[coll].update_one({'_id': ObjectId(entry_id)}, new_values)
         except Exception as e:
             return Response(str(e), status=400)
-        return Response('Content successfully updated', status=200)
+        return Response('Content successfully updated: ' + str(updated), status=200)
+
+    def delete_entry(self, coll, entry_id):
+        try:
+            deleted = self.client.db[coll].delete_one({'_id': ObjectId(entry_id)})
+        except Exception as e:
+            return Response(str(e), status=400)
+        return Response('Content successfully deleted: ' + str(deleted), status=200)
