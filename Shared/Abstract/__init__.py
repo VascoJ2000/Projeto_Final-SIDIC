@@ -1,2 +1,2 @@
-from Shared.Abstract.base_controller import BaseController
-from Shared.Abstract.auth_controller import AuthController
+from Shared.Abstract.base_controller import DLBLController
+from Shared.Abstract.base_controller import CLBLController
