@@ -28,7 +28,9 @@ class Controller(DLBLController):
             doc = list(self.client.db[coll].find({'_id': ObjectId(entry_id)}))
         except Exception as e:
             return Response(str(e), status=404)
-        return Response(json.dumps({'doc': str(doc)}), status=201, mimetype='application/json')
+        if doc:
+            return Response(json.dumps({'doc': str(doc)}), status=201, mimetype='application/json')
+        return Response('Content not found', status=404)
 
     def get_all_entries(self, coll):
         try:
@@ -58,11 +60,15 @@ class Controller(DLBLController):
             updated = self.client.db[coll].update_one({'_id': ObjectId(entry_id)}, new_values)
         except Exception as e:
             return Response(str(e), status=400)
-        return Response('Content successfully updated: ' + str(updated), status=200)
+        if updated.modified_count:
+            return Response('Content successfully updated', status=200)
+        return Response('Content not found', status=404)
 
     def delete_entry(self, coll, entry_id):
         try:
             deleted = self.client.db[coll].delete_one({'_id': ObjectId(entry_id)})
         except Exception as e:
             return Response(str(e), status=400)
-        return Response('Content successfully deleted: ' + str(deleted), status=200)
+        if deleted.deleted_count:
+            return Response('Content successfully deleted', status=200)
+        return Response('Content not found', status=404)
