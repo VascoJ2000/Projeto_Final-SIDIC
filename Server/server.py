@@ -12,8 +12,16 @@ class BusinessLayerServer(Server):
         self.run_server()
 
     def setup_routes(self):
-        # User Layer to Business Layer methods
-        pass
+        # Auth methods
+        self.app.route('/auth/login/<email>&<password>', methods=['GET'])(self.controller.login)
+        self.app.route('/auth/logout', methods=['DELETE'])(self.controller.logout)
+        self.app.route('/auth/token', methods=['GET'])(self.controller.token)
+
+        # User methods
+        self.app.route('/user/<id>', methods=['GET'])(self.controller.get_user)
+        self.app.route('/user', methods=['POST'])(self.controller.add_user)
+        self.app.route('/user', methods=['PUT'])(self.controller.update_user)
+        self.app.route('/user/<id>', methods=['DELETE'])(self.controller.delete_user)
 
 
 data_layer = BusinessLayerServer()

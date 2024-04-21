@@ -52,5 +52,9 @@ class CLBLLinker(ABC):
         pass
 
     @abstractmethod
+    def logout(self):
+        pass
+
+    @abstractmethod
     def token(self):
         pass
