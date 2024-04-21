@@ -1,13 +1,17 @@
 from abc import ABC, abstractmethod
 
 
-class DLBLController(ABC):
+class DLBLLinker(ABC):
     def __init__(self):
         pass
 
     # User methods
     @abstractmethod
-    def get_entry(self, collection, entry_id):
+    def get_entry(self, coll, entry_id):
+        pass
+
+    @abstractmethod
+    def get_all_entries(self, coll):
         pass
 
     @abstractmethod
@@ -23,7 +27,7 @@ class DLBLController(ABC):
         pass
 
 
-class CLBLController(ABC):
+class CLBLLinker(ABC):
     def __init__(self):
         pass
 
