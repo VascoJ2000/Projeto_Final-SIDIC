@@ -1,5 +1,5 @@
 from Database.client import Client
-from Shared.Abstract import DLBLController
+from Shared.Abstract import DLBLLinker
 from flask import request, Response, g
 from dotenv import load_dotenv
 from pymongo import errors
@@ -10,7 +10,7 @@ import os
 load_dotenv()
 
 
-class Controller(DLBLController):
+class Controller(DLBLLinker):
     def __init__(self):
         super().__init__()
         try:
