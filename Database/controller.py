@@ -1,6 +1,6 @@
 from Database.client import Client
 from Shared.Abstract import DLBLLinker
-from flask import request, Response, g
+from flask import request, Response
 from dotenv import load_dotenv
 from pymongo import errors
 from bson import ObjectId
