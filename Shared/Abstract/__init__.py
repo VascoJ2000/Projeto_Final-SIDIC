@@ -1,2 +1,2 @@
-from Shared.Abstract.base_controller import DLBLController
-from Shared.Abstract.base_controller import CLBLController
+from Shared.Abstract.linkers import DLBLLinker
+from Shared.Abstract.linkers import CLBLLinker

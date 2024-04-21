@@ -2,7 +2,7 @@ import requests
 import time
 
 
-class BaseClient:
+class Client:
     def __init__(self):
         self.server_url = None
 
