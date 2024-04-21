@@ -39,5 +39,8 @@ class Controller(DLBLLinker, CLBLLinker):
     def login(self, email, password):
         pass
 
+    def logout(self):
+        pass
+
     def token(self):
         pass
