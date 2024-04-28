@@ -29,7 +29,7 @@ class Controller(DLBLLinker):
         except Exception as e:
             return Response(str(e), status=404)
         if doc:
-            return Response(json.dumps({'doc': str(doc)}), status=201, mimetype='application/json')
+            return Response(json.dumps({'doc': str(doc)}), status=200, mimetype='application/json')
         return Response('Content not found', status=404)
 
     def get_all_entries(self, coll):
@@ -37,7 +37,7 @@ class Controller(DLBLLinker):
             doc = list(self.client.db[coll].find({}))
         except Exception as e:
             return Response(str(e), status=404)
-        return Response(json.dumps({'doc': str(doc)}), status=201, mimetype='application/json')
+        return Response(json.dumps({'doc': str(doc)}), status=200, mimetype='application/json')
 
     def add_entry(self):
         try:
@@ -49,7 +49,7 @@ class Controller(DLBLLinker):
             return Response(str(e), status=404)
         except Exception as e:
             return Response(str(e), status=400)
-        return Response(str(doc_id), status=201)
+        return Response('Entry successfully added', status=201)
 
     def update_entry(self):
         try:
@@ -61,7 +61,7 @@ class Controller(DLBLLinker):
         except Exception as e:
             return Response(str(e), status=400)
         if updated.modified_count:
-            return Response('Content successfully updated', status=200)
+            return Response('Content successfully updated', status=202)
         return Response('Content not found', status=404)
 
     def delete_entry(self, coll, entry_id):
@@ -70,5 +70,5 @@ class Controller(DLBLLinker):
         except Exception as e:
             return Response(str(e), status=400)
         if deleted.deleted_count:
-            return Response('Content successfully deleted', status=200)
+            return Response('Content successfully deleted', status=204)
         return Response('Content not found', status=404)
