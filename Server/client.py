@@ -1,7 +1,6 @@
 from Shared import Client
 from Shared.Abstract import DLBLLinker
 import requests
-import json
 
 
 class BLClient(Client, DLBLLinker):
