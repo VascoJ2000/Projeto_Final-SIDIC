@@ -10,7 +10,7 @@ class Controller(CLBLLinker):
         super().__init__()
         self.cli = BLClient()
 
-    # User Layer to Business Layer methods
+    # User methods
     def get_user(self, user_id, email):
         pass
 
@@ -23,10 +23,14 @@ class Controller(CLBLLinker):
     def delete_user(self):
         pass
 
+    # Authentication methods
     def login(self, email, password):
         pass
 
     def logout(self):
+        pass
+
+    def signin(self, email, password):
         pass
 
     def token(self):
