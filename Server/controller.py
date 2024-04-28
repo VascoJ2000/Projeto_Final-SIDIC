@@ -1,30 +1,14 @@
-from Shared.Abstract import DLBLLinker, CLBLLinker
-from Shared import Client
+from Shared.Abstract import CLBLLinker
+from Server import BLClient
 from Server import server, auth
 from flask import request, Response, g
 import json
 
 
-class Controller(DLBLLinker, CLBLLinker):
+class Controller(CLBLLinker):
     def __init__(self):
         super().__init__()
-        self.cli = Client()
-
-    # Business Layer to Data Layer methods
-    def get_entry(self, coll, entry_id):
-        pass
-
-    def get_all_entries(self, coll):
-        pass
-
-    def add_entry(self, data=None):
-        pass
-
-    def update_entry(self, coll=None, entry_id=None, new_data=None):
-        pass
-
-    def delete_entry(self, coll, entry_id):
-        pass
+        self.cli = BLClient()
 
     # User Layer to Business Layer methods
     def get_user(self, user_id, email):
