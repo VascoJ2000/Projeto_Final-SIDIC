@@ -37,10 +37,10 @@ function showSection(section) {
 window.addEventListener('scroll', () => {
     if(window.scrollY > 5){
         document.getElementById('navbar').classList.add('solid');
-        document.getElementById('navbar').classList.add('bg-dark');
+        document.getElementById('navbar').classList.add('bg-light');
     }else {
         document.getElementById('navbar').classList.remove('solid');
-        document.getElementById('navbar').classList.remove('bg-dark');
+        document.getElementById('navbar').classList.remove('bg-light');
     }
 });
 
