@@ -7,8 +7,8 @@ class BusinessLayerServer(Server):
     def __init__(self):
         self.controller = Controller()
         super().__init__()
-        # TODO: Verify load balancer
         self.connect_to_balancer(os.getenv('BL_LOAD_BALANCER_IP'), os.getenv('BL_LOAD_BALANCER_PORT'))
+        self.controller.cli.connect(os.getenv('DL_LOAD_BALANCER_IP'), os.getenv('DL_LOAD_BALANCER_PORT'))
         self.run_server()
 
     def setup_routes(self):

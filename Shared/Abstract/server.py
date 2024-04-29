@@ -17,6 +17,7 @@ class Server(ABC):
         self.setup_routes()
         self.port = get_port()
         self.setup_signals()
+        self.load_balancer = None
 
     @abstractmethod
     def setup_routes(self):
@@ -25,7 +26,8 @@ class Server(ABC):
     # Makes sure there is a balancer and that it knows of the server's existence
     def connect_to_balancer(self, ip, port, max_attempts=12):
         for i in range(max_attempts):
-            response = requests.get(f'http://{ip}:{port}/{self.port}')
+            self.load_balancer = f'http://{ip}:{port}/'
+            response = requests.get(self.load_balancer + str(self.port))
             if response.status_code == 200:
                 return print(f'Server was added to load balancer')
             else:
@@ -44,6 +46,8 @@ class Server(ABC):
         print("Received signal: ", signum)
         print("Closing server on port: ", str(self.port))
         # Clean up tasks here if necessary
+        if requests.delete(self.load_balancer).status_code == 204:
+            print('Server was removed from load balancer')
         exit()
 
     # Ties the handler to the shutdown commands/buttons

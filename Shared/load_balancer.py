@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, Response
 import hashlib
 
 
@@ -31,6 +31,17 @@ class LoadBalancer:
         else:
             return jsonify({'Server_ip': server[0], 'Server_port': server[1]}), 200
 
+    def delete_server(self):
+        if len(self.servers) == 0:
+            return Response('No Servers are active!', 425)
+        server_ip = request.remote_addr
+        server_port = request.environ.get('REMOTE_PORT')
+        for server in self.servers:
+            if server[0] == server_ip and server[1] == str(server_port):
+                self.servers.remove(server)
+                return Response('Server was deleted successfully!', 204)
+        return Response('Server Could not be removed', 425)
+
     def hash_ip(self, ip_address):
         hashed_ip = hashlib.md5(ip_address.encode()).hexdigest()
         hashed_int = int(hashed_ip, 16)
@@ -40,6 +51,7 @@ class LoadBalancer:
     def setup_routes(self):
         self.app.route('/', methods=['GET'])(self.get_server)
         self.app.route('/<port>', methods=['GET'])(self.add_server)
+        self.app.route('/', methods=['DELETE'])(self.delete_server)
 
     def run_app(self, port):
         self.app.run(port=port)
