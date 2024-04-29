@@ -8,8 +8,8 @@ class BLClient(Client, DLBLLinker):
         super().__init__()
 
     # Business Layer to Data Layer methods
-    def get_entry(self, coll, entry_id):
-        url = self.server_url + f'/{coll}&{entry_id}'
+    def get_entry(self, coll, identifier, entry_id):
+        url = self.server_url + f'/{coll}&{identifier}&{entry_id}'
         response = requests.get(url)
         if response.status_code == 200:
             return response.json()

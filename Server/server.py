@@ -8,7 +8,7 @@ class BusinessLayerServer(Server):
         self.controller = Controller()
         super().__init__()
         # TODO: Verify load balancer
-        # self.connect_to_balancer(os.getenv('BL_LOAD_BALANCER_IP'), os.getenv('BL_LOAD_BALANCER_PORT'))
+        self.connect_to_balancer(os.getenv('BL_LOAD_BALANCER_IP'), os.getenv('BL_LOAD_BALANCER_PORT'))
         self.run_server()
 
     def setup_routes(self):
@@ -22,6 +22,3 @@ class BusinessLayerServer(Server):
         self.app.route('/user', methods=['POST'])(self.controller.add_user)
         self.app.route('/user', methods=['PUT'])(self.controller.update_user)
         self.app.route('/user/<id>', methods=['DELETE'])(self.controller.delete_user)
-
-
-data_layer = BusinessLayerServer()

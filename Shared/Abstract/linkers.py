@@ -7,7 +7,7 @@ class DLBLLinker(ABC):
 
     # User methods
     @abstractmethod
-    def get_entry(self, coll, entry_id):
+    def get_entry(self, coll, identifier, entry_id):
         pass
 
     @abstractmethod

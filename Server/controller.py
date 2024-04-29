@@ -1,6 +1,6 @@
 from Shared.Abstract import CLBLLinker
-from Server import BLClient
-from Server import server, auth
+from Server.client import BLClient
+from Server.middleware import auth
 from flask import request, Response, g
 import json
 
@@ -25,7 +25,13 @@ class Controller(CLBLLinker):
 
     # Authentication methods
     def login(self, email, password):
-        pass
+        try:
+            print(email)
+            print(type(email))
+            doc = self.cli.get_entry('Users', 'email', email)['doc']
+        except Exception as e:
+            return Response(str(e), status=404)
+        return Response(doc, status=200, mimetype='application/json')
 
     def logout(self):
         pass
