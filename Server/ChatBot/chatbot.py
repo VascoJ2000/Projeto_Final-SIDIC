@@ -1,16 +1,45 @@
-import openai
+from openai import OpenAI
+from dotenv import load_dotenv
+import os
 
-openai.api_key = 'sk-proj-OJo3J21KQm6tE5PNGPQST3BlbkFJJWfP5vW83EZvxkhZGe2S'
+load_dotenv('.env')
 
-def ask_gpt3(question):
-    response = openai.Completion.create(
-        engine="gpt-3.5-turbo-instruct",  
-        prompt=question,
-        temperature=0.7,  # Controls the randomness of the response
-        max_tokens=100  # Controls the length of the response
+client = OpenAI(
+    # This is the default and can be omitted
+    api_key=os.getenv('OPENAI_API_KEY'),
+)
+
+model = "gpt-3.5-turbo-0125"
+temperature = 0.7
+max_tokens = 200
+
+
+def chatgpt_response(messages):
+    completion = client.chat.completions.create(
+        model=model,
+        messages=messages,
+        temperature=temperature,
+        max_tokens=max_tokens,  
     )
-    return response.choices[0].text.strip()
+    return completion.choices[0].message.content
 
-question = "What is the capital of France?"
-answer = ask_gpt3(question)
-print(answer)
+def start_conversation():
+    print("Welcome to the ChatGPT conversation!")
+    print("Type 'new conversation' to start a new conversation.")
+    print("Type 'exit' to end the conversation.")
+    messages = []
+    while True:
+        user_input = input("You: ")
+        if user_input.lower() == 'exit':
+            print("Goodbye!")
+            break
+        elif user_input.lower() == 'new conversation':
+            print("Starting a new conversation...")
+            messages = []
+            continue
+        messages.append({"role": "user", "content": user_input})
+        response = chatgpt_response(messages)
+        print("ChatGPT:", response)
+        messages.append({"role": "system", "content": response})
+
+start_conversation()
