@@ -78,20 +78,3 @@ def generate_token(user_data):
     }
     jwt_token = jwt.encode(payload, os.getenv('ACCESS_KEY'), algorithm='HS256')
     return jwt_token
-
-
-def verify_token(header):
-    try:
-        if 'Authorization' in header:
-            auth_header = header.get('Authorization')
-            token = auth_header.split(' ')[1]
-        else:
-            raise Exception('No authorization header')
-        token_decoded = jwt.decode(token, os.getenv('ACCESS_KEY'), algorithms='HS256')
-    except jwt.ExpiredSignatureError:
-        raise Exception("Token has expired")
-    except jwt.InvalidTokenError as e:
-        raise Exception("Token is Invalid: " + str(e))
-    else:
-        return token_decoded
-
