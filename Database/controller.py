@@ -71,9 +71,12 @@ class Controller(DLBLLinker):
         try:
             request_json = request.get_json()
             coll = request_json['coll']
+            identifier = request_json['identifier']
             entry_id = request_json['entry_id']
             new_values = request_json['new_values']
-            updated = self.client.db[coll].update_one({'_id': ObjectId(entry_id)}, new_values)
+            if identifier == '_id':
+                entry_id = ObjectId(entry_id)
+            updated = self.client.db[coll].update_one({identifier: entry_id}, new_values)
         except Exception as e:
             return Response(str(e), status=400)
         if updated.modified_count:
