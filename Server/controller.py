@@ -40,7 +40,7 @@ class Controller(CLBLLinker):
         try:
             doc = self.cli.get_entry('Users', 'email', email)['doc']
             doc_password = doc['password']
-            PasswordHasher(password, doc_password)
+            password_verify(password, doc_password)
 
             user_id = doc['_id']
             user_email = doc['email']
