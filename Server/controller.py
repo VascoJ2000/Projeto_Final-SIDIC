@@ -38,20 +38,25 @@ class Controller(CLBLLinker):
     # Authentication methods
     def login(self, email, password):
         try:
+            # Gets user info from database and verifies if password matches
             doc = self.cli.get_entry('Users', 'email', email)['doc']
             doc_password = doc['password']
             password_verify(password, doc_password)
 
+            # Creates Access and Refresh Tokens
             user_id = doc['_id']
             user_email = doc['email']
             access_token = generate_token(user_id, user_email, False)
             refresh_token = generate_token(user_id, user_email, True)
+
+            # Stores Refresh Token in database
             # TODO: Check if data is registered in database
-            json_data = {'coll': 'Tokens', 'query': {
-                'user_id': user_id,
-                'email': user_email,
-                'refresh_token': refresh_token
-            }}
+            json_data = {'coll': 'Tokens',
+                         'query': {
+                            'user_id': user_id,
+                            'email': user_email,
+                            'refresh_token': refresh_token
+                         }}
             self.cli.add_entry(json_data)
         except Exception as e:
             return Response(str(e), status=404)
