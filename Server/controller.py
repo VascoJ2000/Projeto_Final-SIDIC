@@ -5,10 +5,9 @@ from flask import request, Response, g, jsonify
 from dotenv import load_dotenv
 from argon2 import PasswordHasher
 import datetime
-import json
 import jwt
 import os
-
+import smtplib
 
 load_dotenv()
 
@@ -39,7 +38,7 @@ class Controller(CLBLLinker):
     def login(self, email, password):
         try:
             # Gets user info from database and verifies if password matches
-            doc = self.cli.get_entry('Users', 'email', email)['doc']
+            doc = self.cli.get_entry('Users', 'email', email)[0]
             doc_password = doc['password']
             password_verify(password, doc_password)
 
@@ -53,23 +52,75 @@ class Controller(CLBLLinker):
             # TODO: Check if data is registered in database
             json_data = {'coll': 'Tokens',
                          'query': {
-                            'user_id': user_id,
-                            'email': user_email,
-                            'refresh_token': refresh_token
+                             'user_id': user_id,
+                             'email': user_email,
+                             'refresh_token': refresh_token
                          }}
             self.cli.add_entry(json_data)
         except Exception as e:
             return Response(str(e), status=404)
         return jsonify({'Token': {'Access': access_token, 'Refresh': refresh_token}}, status=200)
 
+    def signin(self):
+        try:
+            # Extracts the information send by the client and resends it to the data layer for storage
+            username = request.json['name']
+            user_email = request.json['email']
+            password = request.json['password']
+            json_data = {'coll': 'Users',
+                         'query': {
+                             'name': username,
+                             'email': user_email,
+                             'password': password,
+                             'verified': False
+                         }}
+            self.cli.add_entry(json_data)
+
+            # Creates verification key, sends it to given email and stores it for confirmation
+            # TODO: Confirm if key is good enough
+            key = generate_verification_key()
+            json_data = {'coll': 'Verify',
+                         'query': {
+                             'email': user_email,
+                             'key': key
+                         }}
+            send_verification_email(user_email, key)
+            self.cli.add_entry(json_data)
+        except Exception as e:
+            return Response(str(e), status=400)
+        return Response('User successfully registered', status=201)
+
+    @auth(key=os.getenv('REFRESH_KEY'))
     def logout(self):
         pass
 
-    def signin(self, email, password):
-        pass
-
+    @auth(key=os.getenv('REFRESH_KEY'))
     def token(self):
         pass
+
+    # Returns the html page where people can insert the code
+    def verify_email_page(self):
+        pass
+
+    def verify_email(self):
+        # TODO: Check for bugs
+        try:
+            # Confirms if key sent is the same as in database
+            user_email = request.json['email']
+            data_json = self.cli.get_entry('Verify', 'email', user_email)[0]
+            key = request.json['key']
+            if data_json['key'] != key:
+                return Response({'error': 'Invalid key'}, status=403)
+
+            # Changes user status to verified on database
+            json_data = {"coll": "Users",
+                         "identifier": "email",
+                         "entry_id": user_email,
+                         "new_values": {"$set": {"verified": True}}}
+            self.cli.update_entry(json_data)
+        except Exception as e:
+            return Response(str(e), status=400)
+        return Response('User successfully verified', status=202)
 
 
 def password_hash(password):
@@ -80,11 +131,13 @@ def password_hash(password):
 
 def password_verify(input_password, hashed_password):
     ph = PasswordHasher()
-    if ph.verify(input_password, hashed_password):
+    if ph.verify(hashed_password, input_password):
         return True
     raise Exception('Password is invalid!')
 
 
+# Generates a new jwt
+# refresh works as a conditional that defines the type of token
 def generate_token(user_id, email, refresh):
     if not refresh:
         expires = datetime.timedelta(minutes=30)
@@ -99,3 +152,14 @@ def generate_token(user_id, email, refresh):
     }
     jwt_token = jwt.encode(payload, key, algorithm='HS256')
     return jwt_token
+
+
+# Generates a new key to confirm email ownership
+def generate_verification_key():
+    return os.urandom(24)
+
+
+# Sends given message to given email
+# TODO: Integrate with smtp
+def send_verification_email(email, code):
+    pass
