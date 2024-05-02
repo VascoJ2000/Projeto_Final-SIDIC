@@ -1,7 +1,7 @@
 from Shared.Abstract import CLBLLinker
 from Server.client import BLClient
 from Server.middleware import auth
-from flask import request, Response, g
+from flask import request, Response, g, jsonify
 from dotenv import load_dotenv
 from argon2 import PasswordHasher
 import datetime
@@ -38,14 +38,24 @@ class Controller(CLBLLinker):
     # Authentication methods
     def login(self, email, password):
         try:
-            print(email)
-            print(type(email))
             doc = self.cli.get_entry('Users', 'email', email)['doc']
-            user = doc['User']
-            print(user)
+            doc_password = doc['password']
+            PasswordHasher(password, doc_password)
+
+            user_id = doc['_id']
+            user_email = doc['email']
+            access_token = generate_token(user_id, user_email, False)
+            refresh_token = generate_token(user_id, user_email, True)
+            # TODO: Check if data is registered in database
+            json_data = {'coll': 'Tokens', 'query': {
+                'user_id': user_id,
+                'email': user_email,
+                'refresh_token': refresh_token
+            }}
+            self.cli.add_entry(json_data)
         except Exception as e:
             return Response(str(e), status=404)
-        return Response(doc, status=200, mimetype='application/json')
+        return jsonify({'Token': {'Access': access_token, 'Refresh': refresh_token}}, status=200)
 
     def logout(self):
         pass
@@ -70,12 +80,17 @@ def password_verify(input_password, hashed_password):
     raise Exception('Password is invalid!')
 
 
-def generate_token(user_data):
+def generate_token(user_id, email, refresh):
+    if not refresh:
+        expires = datetime.timedelta(minutes=30)
+        key = os.getenv('ACCESS_KEY')
+    else:
+        expires = datetime.timedelta(weeks=1)
+        key = os.getenv('REFRESH_KEY')
     payload = {
-        'User_id': user_data['User_id'],
-        'Email': user_data['Email'],
-        'Username': user_data['Username'],
-        'exp': datetime.datetime.utcnow() + datetime.timedelta(days=1)
+        'User_id': user_id,
+        'Email': email,
+        'exp': datetime.datetime.utcnow() + expires
     }
-    jwt_token = jwt.encode(payload, os.getenv('ACCESS_KEY'), algorithm='HS256')
+    jwt_token = jwt.encode(payload, key, algorithm='HS256')
     return jwt_token
