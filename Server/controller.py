@@ -40,8 +40,9 @@ class Controller(CLBLLinker):
         try:
             print(email)
             print(type(email))
-            doc_json = self.cli.get_entry('Users', 'email', email)
-            doc = doc_json['doc']
+            doc = self.cli.get_entry('Users', 'email', email)['doc']
+            user = doc['User']
+            print(user)
         except Exception as e:
             return Response(str(e), status=404)
         return Response(doc, status=200, mimetype='application/json')

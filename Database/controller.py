@@ -4,7 +4,7 @@ from flask import request, Response
 from dotenv import load_dotenv
 from pymongo import errors
 from bson import ObjectId
-import json
+from bson.json_util import dumps
 import os
 
 load_dotenv()
@@ -19,13 +19,13 @@ class Controller(DLBLLinker):
             # Tries to connect to main database
             self.client = Client(os.getenv('DB_CLIENT'), os.getenv('DB_CONNECT'))
         except Exception as e:
-            print('Erro: ' + str(e))
+            print('Error: ' + str(e))
             try:
                 # If connection to main database is not possible, tries to connect to secondary database
                 self.client = Client(os.getenv('DB_CLIENT_BACKUP'), os.getenv('DB_CONNECT'))
             except Exception as e:
                 # If both databases are down it just closes down
-                print('Erro: ' + str(e))
+                print('Error: ' + str(e))
                 exit()
 
     # Tries to find and if found returns a single entry in the requested collection with the specified id
@@ -34,20 +34,22 @@ class Controller(DLBLLinker):
             if identifier == '_id':
                 # If the id is the actual id of the document it needs to be converted into a ObjectId Object
                 entry_id = ObjectId(entry_id)
-            doc = list(self.client.db[coll].find({identifier: entry_id}))
+            doc = self.client.db[coll].find({identifier: entry_id})
+            doc_json = dumps(doc)
         except Exception as e:
             return Response(str(e), status=404)
         if doc:
-            return Response(json.dumps({'doc': str(doc[0])}), status=200, mimetype='application/json')
+            return Response(doc_json, status=200, mimetype='application/json')
         return Response('Content not found', status=404)
 
     # Returns all documents in a single collection
     def get_all_entries(self, coll):
         try:
-            doc = list(self.client.db[coll].find({}))
+            doc = self.client.db[coll].find({})
+            doc_json = dumps(doc)
         except Exception as e:
             return Response(str(e), status=404)
-        return Response(json.dumps({'doc': str(doc)}), status=200, mimetype='application/json')
+        return Response(doc_json, status=200, mimetype='application/json')
 
     # Creates a new document in the specified collection
     # Request needs a json string with "coll" and "query" names to fulfill the request
