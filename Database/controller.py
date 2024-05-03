@@ -87,9 +87,12 @@ class Controller(DLBLLinker):
 
     # Deletes an exiting document
     # Like update_entry if the document does not exist it returns status 404
-    def delete_entry(self, coll, entry_id):
+    def delete_entry(self, coll, identifier, entry_id):
         try:
-            deleted = self.client.db[coll].delete_one({'_id': ObjectId(entry_id)})
+            if identifier == '_id':
+                # If the id is the actual id of the document it needs to be converted into a ObjectId Object
+                entry_id = ObjectId(entry_id)
+            deleted = self.client.db[coll].delete_one({identifier: ObjectId(entry_id)})
         except Exception as e:
             return Response(str(e), status=400)
         if deleted.deleted_count:

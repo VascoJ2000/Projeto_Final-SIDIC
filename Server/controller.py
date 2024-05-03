@@ -101,7 +101,12 @@ class Controller(CLBLLinker):
 
     @auth(key=os.getenv('REFRESH_KEY'))
     def logout(self):
-        pass
+        try:
+            email = g.decoded_token['email']
+            self.cli.delete_entry('Tokens', 'email', email)
+        except Exception as e:
+            return Response(str(e), status=400)
+        return Response('Logout successful', status=205)
 
     @auth(key=os.getenv('REFRESH_KEY'))
     def token(self):
