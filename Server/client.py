@@ -42,7 +42,7 @@ class BLClient(Client, DLBLLinker):
             return True
         raise Exception(response.status_code)
 
-    def delete_entry(self, coll, entry_id):
+    def delete_entry(self, coll, identifier, entry_id):
         url = self.server_url + f'/{coll}&{entry_id}'
         response = requests.delete(url)
         if response.status_code == 204:

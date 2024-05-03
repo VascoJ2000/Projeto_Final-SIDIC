@@ -8,12 +8,20 @@ def auth(*args, **kwargs):
         @wraps(func)
         def __auth():
             try:
-                g.token = authorization_verify(request.headers)
+
+                g.token = cookies_verify(True)
                 g.decoded = token_verify(g.token, kwargs['key'])
             except Exception as e:
                 return Response('401 Unauthorized', str(e))
         return __auth
     return _auth
+
+
+def cookies_verify(refresh):
+    if refresh:
+        return request.cookies.get('chatflow-refresh_token')
+    else:
+        return request.cookies.get('chatflow-access_token')
 
 
 def authorization_verify(header):

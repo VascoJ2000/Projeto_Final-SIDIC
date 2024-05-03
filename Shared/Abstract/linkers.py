@@ -23,7 +23,7 @@ class DLBLLinker(ABC):
         pass
 
     @abstractmethod
-    def delete_entry(self, coll, entry_id):
+    def delete_entry(self, coll, identifier, entry_id):
         pass
 
 
