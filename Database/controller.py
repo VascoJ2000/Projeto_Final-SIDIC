@@ -58,7 +58,9 @@ class Controller(DLBLLinker):
             request_json = request.get_json()
             coll = request_json['coll']
             query = request_json['query']
-            doc_id = self.client.db[coll].insert_one(query).inserted_id
+            doc = self.client.db[coll].insert_one(query)
+            if not doc.inserted_id:
+                raise Exception("Entry could not be added to database")
         except errors.CollectionInvalid as e:
             return Response(str(e), status=404)
         except Exception as e:
