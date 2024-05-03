@@ -67,7 +67,7 @@ class Controller(CLBLLinker):
             # Extracts the information send by the client and resends it to the data layer for storage
             username = request.json['name']
             user_email = request.json['email']
-            password = request.json['password']
+            password = password_hash(request.json['password'])
             json_data = {'coll': 'Users',
                          'query': {
                              'name': username,
@@ -85,6 +85,8 @@ class Controller(CLBLLinker):
                              'key': key
                          }}
             send_verification_email(user_email, key)
+            # Remove print after smtp is implemented
+            print(key)
             self.cli.add_entry(json_data)
         except Exception as e:
             return Response(str(e), status=400)
@@ -103,20 +105,25 @@ class Controller(CLBLLinker):
         pass
 
     def verify_email(self):
-        # TODO: Check for bugs
         try:
-            # Confirms if key sent is the same as in database
             user_email = request.json['email']
+            # Checks if user is not already verified
+            data_json = self.cli.get_entry('Users', 'email', user_email)[0]
+            if data_json['verified']:
+                return Response('User is already verified', status=409)
+
+            # Confirms if key sent is the same as in database
             data_json = self.cli.get_entry('Verify', 'email', user_email)[0]
             key = request.json['key']
             if data_json['key'] != key:
-                return Response({'error': 'Invalid key'}, status=403)
+                return Response('Invalid key', status=403)
 
             # Changes user status to verified on database
             json_data = {"coll": "Users",
                          "identifier": "email",
                          "entry_id": user_email,
-                         "new_values": {"$set": {"verified": True}}}
+                         "new_values": {"$set": {"verified": True}}
+                         }
             self.cli.update_entry(json_data)
         except Exception as e:
             return Response(str(e), status=400)

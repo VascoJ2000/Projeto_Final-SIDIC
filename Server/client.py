@@ -32,12 +32,11 @@ class BLClient(Client, DLBLLinker):
             return True
         raise Exception(response.status_code)
 
-    def update_entry(self, coll=None, entry_id=None, value=None, new_data=None):
-        if coll or entry_id or new_data is None:
-            return False
+    def update_entry(self, data=None):
+        if data is None:
+            raise Exception("No data provided")
         headers = {'Content-Type': 'application/json; charset=utf-8'}
         url = self.server_url
-        data = {"coll": coll, "entry_id": entry_id, "new_values": {"$set": {value: new_data}}}
         response = requests.put(url, headers=headers, json=data)
         if response.status_code == 202:
             return True
