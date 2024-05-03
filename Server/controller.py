@@ -7,6 +7,7 @@ from argon2 import PasswordHasher
 import datetime
 import jwt
 import os
+import random
 import smtplib
 
 load_dotenv()
@@ -77,7 +78,6 @@ class Controller(CLBLLinker):
             self.cli.add_entry(json_data)
 
             # Creates verification key, sends it to given email and stores it for confirmation
-            # TODO: Confirm if key is good enough
             key = generate_verification_key()
             json_data = {'coll': 'Verify',
                          'query': {
@@ -156,7 +156,7 @@ def generate_token(user_id, email, refresh):
 
 # Generates a new key to confirm email ownership
 def generate_verification_key():
-    return os.urandom(24)
+    return ''.join(random.choices('0123456789', k=6))
 
 
 # Sends given message to given email
