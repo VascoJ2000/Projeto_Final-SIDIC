@@ -17,7 +17,7 @@ class BusinessLayerServer(Server):
         self.app.route('/auth/signin', methods=['POST'])(self.controller.signin)
         self.app.route('/auth/logout', methods=['DELETE'])(self.controller.logout)
         self.app.route('/auth/token', methods=['GET'])(self.controller.token)
-        self.app.route('/auth/email', methods=['GET'])(self.controller.verify_email)
+        self.app.route('/auth/email', methods=['POST'])(self.controller.verify_email)
 
         # User methods
         self.app.route('/user/<id>', methods=['GET'])(self.controller.get_user)
