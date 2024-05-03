@@ -57,7 +57,7 @@ class Server(ABC):
 
 
 # Makes sure the server uses a port that is not being used and within a certain range
-def get_port(start_port=6000, max_attempts=12, port_range=1999):
+def get_port(start_port=6000, max_attempts=12, port_range=0):
     for i in range(max_attempts):
         port = random.randint(start_port, start_port + port_range)
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

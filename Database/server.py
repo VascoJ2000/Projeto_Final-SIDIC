@@ -7,7 +7,7 @@ class DataLayerServer(Server):
     def __init__(self):
         self.controller = Controller()
         super().__init__()
-        self.connect_to_balancer(os.getenv('DL_LOAD_BALANCER_IP'), os.getenv('DL_LOAD_BALANCER_PORT'))
+        # self.connect_to_balancer(os.getenv('DL_LOAD_BALANCER_IP'), os.getenv('DL_LOAD_BALANCER_PORT'))
         self.run_server()
 
     def setup_routes(self):
