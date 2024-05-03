@@ -1,7 +1,7 @@
 from Shared.Abstract import CLBLLinker
 from Server.client import BLClient
 from Server.middleware import auth
-from flask import request, Response, g, jsonify
+from flask import request, Response, g, make_response, render_template
 from dotenv import load_dotenv
 from argon2 import PasswordHasher
 import datetime
@@ -38,29 +38,36 @@ class Controller(CLBLLinker):
     # Authentication methods
     def login(self, email, password):
         try:
+            # Checks if user is not already verified
+            entry_data = self.cli.get_entry('Users', 'email', email)[0]
+            if not entry_data['verified']:
+                return Response('User is not verified', status=409)
+
             # Gets user info from database and verifies if password matches
-            doc = self.cli.get_entry('Users', 'email', email)[0]
-            doc_password = doc['password']
-            password_verify(password, doc_password)
+            entry_password = entry_data['password']
+            password_verify(password, entry_password)
 
             # Creates Access and Refresh Tokens
-            user_id = doc['_id']
-            user_email = doc['email']
-            access_token = generate_token(user_id, user_email, False)
-            refresh_token = generate_token(user_id, user_email, True)
+            user_id = entry_data['_id']
+            access_token = generate_token(user_id, email, False)
+            refresh_token = generate_token(user_id, email, True)
 
             # Stores Refresh Token in database
-            # TODO: Check if data is registered in database
             json_data = {'coll': 'Tokens',
                          'query': {
                              'user_id': user_id,
-                             'email': user_email,
+                             'email': email,
                              'refresh_token': refresh_token
                          }}
             self.cli.add_entry(json_data)
+
+            # Creates a response object and set tokens in cookies
+            res = make_response("Login successful", 200)
+            res.set_cookie('chatflow-access_token', access_token)
+            res.set_cookie('chatflow-refresh_token', refresh_token)
         except Exception as e:
-            return Response(str(e), status=404)
-        return jsonify({'Token': {'Access': access_token, 'Refresh': refresh_token}}, status=200)
+            return Response(str(e), status=400)
+        return res
 
     def signin(self):
         try:
@@ -108,14 +115,14 @@ class Controller(CLBLLinker):
         try:
             user_email = request.json['email']
             # Checks if user is not already verified
-            data_json = self.cli.get_entry('Users', 'email', user_email)[0]
-            if data_json['verified']:
+            entry_data = self.cli.get_entry('Users', 'email', user_email)[0]
+            if entry_data['verified']:
                 return Response('User is already verified', status=409)
 
             # Confirms if key sent is the same as in database
-            data_json = self.cli.get_entry('Verify', 'email', user_email)[0]
+            entry_data = self.cli.get_entry('Verify', 'email', user_email)[0]
             key = request.json['key']
-            if data_json['key'] != key:
+            if entry_data['key'] != key:
                 return Response('Invalid key', status=403)
 
             # Changes user status to verified on database
@@ -153,8 +160,8 @@ def generate_token(user_id, email, refresh):
         expires = datetime.timedelta(weeks=1)
         key = os.getenv('REFRESH_KEY')
     payload = {
-        'User_id': user_id,
-        'Email': email,
+        'user_id': user_id,
+        'email': email,
         'exp': datetime.datetime.utcnow() + expires
     }
     jwt_token = jwt.encode(payload, key, algorithm='HS256')
