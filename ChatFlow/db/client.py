@@ -1,58 +1,19 @@
-from Shared.Abstract import DLBLLinker
-import requests
-import time
+from pymongo.mongo_client import MongoClient
+from pymongo.server_api import ServerApi
 from dotenv import load_dotenv
 import os
 
 load_dotenv()
 
 
-class BLClient(DLBLLinker):
-    def __init__(self):
-        super().__init__()
-        self.server_url = os.getenv('DL_URL')
+class DBClient:
+    def __init__(self, uri, db):
+        self.client = MongoClient(uri, server_api=ServerApi('1'))
+        self.db = self.client[db]
 
-    # Business Layer to Data Layer methods
-    def get_entry(self, coll, identifier, entry_id):
-        url = self.server_url + f'/{coll}&{identifier}&{entry_id}'
-        response = requests.get(url)
-        if response.status_code == 200:
-            return response.json()
-        raise Exception(response.status_code)
-
-    def get_all_entries(self, coll):
-        url = self.server_url + f'/all/{coll}'
-        response = requests.get(url)
-        if response.status_code == 200:
-            return response.json()
-        raise Exception(response.status_code)
-
-    def add_entry(self, data=None):
-        if data is None:
-            return False
-        headers = {'Content-Type': 'application/json; charset=utf-8'}
-        url = self.server_url
-        response = requests.post(url, headers=headers, json=data)
-        if response.status_code == 201:
-            return True
-        raise Exception(response.status_code)
-
-    def update_entry(self, data=None):
-        if data is None:
-            raise Exception("No data provided")
-        headers = {'Content-Type': 'application/json; charset=utf-8'}
-        url = self.server_url
-        response = requests.put(url, headers=headers, json=data)
-        if response.status_code == 202:
-            return True
-        raise Exception(response.status_code)
-
-    def delete_entry(self, coll, identifier, entry_id):
-        url = self.server_url + f'/{coll}&{entry_id}'
-        response = requests.delete(url)
-        if response.status_code == 204:
-            return True
-        raise Exception(response.status_code)
+        self.client.admin.command('ping')
+        print("Pinged your deployment. You successfully connected to MongoDB!")
 
 
-db_cli = BLClient()
+db_cli = DBClient(os.getenv('DB_CLIENT'), os.getenv('DB_CONNECT'))
+# db_cli = DBClient(os.getenv('DB_CLIENT_BACKUP'), os.getenv('DB_CONNECT'))

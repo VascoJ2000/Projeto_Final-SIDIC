@@ -3,6 +3,8 @@ from flask import request, Response, make_response, render_template
 from ChatFlow.db.client import db_cli
 from dotenv import load_dotenv
 from argon2 import PasswordHasher
+from bson import ObjectId
+from pymongo import errors
 import datetime
 import jwt
 import os
@@ -16,7 +18,9 @@ load_dotenv()
 def login(email, password):
     try:
         # Checks if user is not already verified
-        entry_data = db_cli.get_entry('Users', 'email', email)[0]
+        entry_data = db_cli.db['Users'].find_one({'email': email})
+        if not entry_data:
+            raise KeyError(f'User {email} is not registered')
         if not entry_data['verified']:
             return Response('User is not verified', status=409)
 
@@ -25,18 +29,16 @@ def login(email, password):
         password_verify(password, entry_password)
 
         # Creates Access and Refresh Tokens
-        user_id = entry_data['_id']
+        user_id = str(entry_data['_id'])
         access_token = generate_token(user_id, email, False)
         refresh_token = generate_token(user_id, email, True)
 
         # Stores Refresh Token in database
-        json_data = {'coll': 'Tokens',
-                     'query': {
-                         'user_id': user_id,
-                         'email': email,
-                         'refresh_token': refresh_token
-                     }}
-        db_cli.add_entry(json_data)
+        query = {'user_id': ObjectId(user_id),
+                 'email': email,
+                 'refresh_token': refresh_token
+                 }
+        db_cli.db['Tokens'].insert_one(query)
 
         # Creates a response object and set tokens in cookies
         res = make_response("Login successful", 200)
@@ -50,38 +52,41 @@ def login(email, password):
 @app.route('/auth', methods=['POST'])
 def signin():
     try:
-        # Extracts the information send by the client and resends it to the data layer for storage
+        # Extracts the information send by the client and resends it to the database for storage
         username = request.json['name']
         user_email = request.json['email']
         password = password_hash(request.json['password'])
-        json_data = {'coll': 'Users',
-                     'query': {
-                         'name': username,
-                         'email': user_email,
-                         'password': password,
-                         'verified': False
-                     }}
-        db_cli.add_entry(json_data)
+        query = {'name': username,
+                 'email': user_email,
+                 'password': password,
+                 'verified': False
+                 }
+        db_cli.db['Users'].insert_one(query)
 
         # Creates verification key, sends it to given email and stores it for confirmation
         key = generate_verification_key()
-        json_data = {'coll': 'Verify',
-                     'query': {
-                         'email': user_email,
-                         'key': key
-                     }}
+        query = {'email': user_email,
+                 'key': key
+                 }
         send_verification_email(user_email, key)
-        # Remove print after smtp is implemented
-        print(key)
-        db_cli.add_entry(json_data)
+        print(key)  # TODO: Remove print after smtp is implemented
+        db_cli.db['Verify'].insert_one(query)
+    except errors.DuplicateKeyError:
+        return Response('Email already in use!', status=409)
     except Exception as e:
         return Response(str(e), status=400)
     return Response('User successfully registered', status=201)
 
 
 @app.route('/auth', methods=['DELETE'])
-def logout():  # TODO: Fix auth middleware
-    pass
+def logout():
+    try:
+        refresh_token = request.cookies.get('chatflow-refresh_token')
+        user_id = db_cli.db['Tokens'].find_one({'refresh_token': refresh_token})['user_id']
+        db_cli.db['Tokens'].delete_many({'user_id': user_id})
+    except Exception as e:
+        return Response(str(e), status=403)
+    return Response('Logout successful! You can close the browser.', status=200)
 
 
 @app.route('/auth/token', methods=['GET'])
