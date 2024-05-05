@@ -2,7 +2,7 @@ from flask import Flask, render_template
 
 app = Flask(__name__)
 
-# import routes
+# import routes ***DON'T REMOVE***
 import ChatFlow.src
 
 
