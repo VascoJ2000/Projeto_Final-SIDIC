@@ -59,6 +59,14 @@ def signin():
         query = {'name': username,
                  'email': user_email,
                  'password': password,
+                 'age': None,
+                 'gender': None,
+                 'country': None,
+                 'city': None,
+                 'address': None,
+                 'phone': None,
+                 'occupation': None,
+                 'logged_in': False,
                  'verified': False
                  }
         db_cli.db['Users'].insert_one(query)
