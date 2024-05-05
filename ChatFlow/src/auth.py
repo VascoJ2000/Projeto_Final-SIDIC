@@ -113,23 +113,23 @@ def verify_email():
     try:
         user_email = request.json['email']
         # Checks if user is not already verified
-        entry_data = db_cli.get_entry('Users', 'email', user_email)[0]
+        entry_data = db_cli.db['Users'].find_one({'email': user_email})
+        if not entry_data:
+            raise KeyError(f'User {user_email} is not registered')
         if entry_data['verified']:
             return Response('User is already verified', status=409)
 
         # Confirms if key sent is the same as in database
-        entry_data = db_cli.get_entry('Verify', 'email', user_email)[0]
+        entry_data = db_cli.db['Verify'].find_one({'email': user_email})
         key = request.json['key']
         if entry_data['key'] != key:
             return Response('Invalid key', status=403)
+        db_cli.db['Verify'].delete_one({'email': user_email})
 
         # Changes user status to verified on database
-        json_data = {"coll": "Users",
-                     "identifier": "email",
-                     "entry_id": user_email,
-                     "new_values": {"$set": {"verified": True}}
-                     }
-        db_cli.update_entry(json_data)
+        query = {"email": user_email }
+        new_values = {"$set": {"verified": True}}
+        db_cli.db['Users'].update_one(query, new_values)
     except Exception as e:
         return Response(str(e), status=400)
     return Response('User successfully verified', status=202)
