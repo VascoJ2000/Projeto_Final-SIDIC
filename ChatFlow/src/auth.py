@@ -24,6 +24,9 @@ def login(email, password):
         if not entry_data['verified']:
             return Response('User is not verified', status=409)
 
+        # Changes user status to logged_in = true
+        db_cli.db['Users'].update_one({'email': email}, {'$set': {'logged_in': True}})
+
         # Gets user info from database and verifies if password matches
         entry_password = entry_data['password']
         password_verify(password, entry_password)
@@ -89,9 +92,13 @@ def signin():
 @app.route('/auth', methods=['DELETE'])
 def logout():
     try:
+        # Checks the token and then deletes copies from database
         refresh_token = request.cookies.get('chatflow-refresh_token')
         user_id = db_cli.db['Tokens'].find_one({'refresh_token': refresh_token})['user_id']
         db_cli.db['Tokens'].delete_many({'user_id': user_id})
+
+        # Changes user status to logged_in = false
+        db_cli.db['Users'].update_one({'_id': user_id}, {'$set': {'logged_in': False}})
     except Exception as e:
         return Response(str(e), status=403)
     return Response('Logout successful! You can close the browser.', status=200)
