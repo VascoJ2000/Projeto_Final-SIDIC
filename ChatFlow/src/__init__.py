@@ -1,1 +1,1 @@
-from ChatFlow.src import auth, user
+from src import auth, user
