@@ -1,7 +1,7 @@
 from functools import wraps
 from flask import request, Response, g
 from dotenv import load_dotenv
-from ChatFlow.db.client import db_cli
+from ChatFlow.db import db_cli
 import jwt
 import os
 
