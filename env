@@ -1,0 +1,19 @@
+# Database connection
+DB_CLIENT="mongodb+srv://30005819:J1DJpdbw87aHwif5@projectcluster.b6bbyzl.mongodb.net/?retryWrites=true&w=majority&appName=ProjectCluster"
+DB_CONNECT="ChatFlow"
+
+DB_CLIENT_BACKUP="mongodb://localhost:27017/"
+
+# Authentication
+ACCESS_KEY="p8Yq8GhBYZ9HWx2hxUpahv7VsUWdGFiYKkcB-VijBv4"
+REFRESH_KEY="0f7fb847f2ed8e8d7f21726d34c034031034e14c"
+
+# OpenAI
+
+OPENAI_API_KEY="sk-proj-OJo3J21KQm6tE5PNGPQST3BlbkFJJWfP5vW83EZvxkhZGe2S"
+
+#Email
+
+EMAIL_USER=""
+EMAIL_PASS=""
+EMAIL_STMP=""

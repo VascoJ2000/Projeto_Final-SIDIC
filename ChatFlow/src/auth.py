@@ -1,6 +1,6 @@
 from __main__ import app
 from flask import request, Response, make_response, render_template
-from ChatFlow.db.client import db_cli
+from db.client import db_cli
 from dotenv import load_dotenv
 from argon2 import PasswordHasher
 from bson import ObjectId
