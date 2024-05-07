@@ -2,6 +2,7 @@ from __main__ import app
 from ChatFlow.middleware.auth import auth_access
 from flask import Response, request, g
 from ChatFlow.db import db_cli
+from bson import ObjectId
 import json
 
 
@@ -14,7 +15,7 @@ def get_workspaces():
         res_dict = {'workspaces': []}
 
         for entry in db_cli['Workspace'].find({'email': email}):
-            res_dict['workspaces'].append(entry['workspace_name'])
+            res_dict['workspaces'].append({'workspace_name': entry['workspace_name'], "workspace_id": str(entry['_id'])})
         res_json = json.dumps(res_dict, ensure_ascii=False).encode('utf8')
     except Exception as e:
         return Response(str(e), status=error_status)
@@ -24,7 +25,19 @@ def get_workspaces():
 @app.route('/workspace/<workspace>', methods=['GET'])
 @auth_access
 def get_workspace(workspace):
-    pass
+    error_status = 400
+    try:
+        workspace_entry = db_cli['Workspace'].find_one({'_id': ObjectId(workspace)})
+        root_folder = db_cli['Folders'].find_one({'_id': workspace_entry['root_folder']})
+        if not workspace_entry or not root_folder:
+            error_status = 404
+            raise KeyError('Workspace not found')
+
+        res_dict = {'folders': root_folder['folders'], 'files': root_folder['files'], 'is_root': True}
+        res_json = json.dumps(res_dict, ensure_ascii=False).encode('utf8')
+    except Exception as e:
+        return Response(str(e), status=error_status)
+    return Response(res_json, status=200, mimetype='application/json charset=utf-8')
 
 
 @app.route('/workspace', methods=['POST'])
@@ -38,18 +51,19 @@ def create_workspace():
         query = {'user_id': user_id,
                  'email': email,
                  'workspace_name': workspace_name,
-                 'folders': []
+                 'root_folder': None
                  }
         workspace_id = db_cli['Workspace'].insert_one(query).inserted_id
 
         query = {'workspace_id': workspace_id,
                  'name': 'root',
                  'folders': [],
-                 'files': []
+                 'files': [],
+                 'is_root': True
                  }
         folder_id = db_cli['Folders'].insert_one(query).inserted_id
 
-        db_cli['Workspace'].update_one({'_id': workspace_id}, {'$push': {'folders': folder_id}})
+        db_cli['Workspace'].update_one({'_id': workspace_id}, {'$set': {'root_folder': folder_id}})
     except Exception as e:
         return Response(str(e), status=error_status)
     return Response(f'Workspace {workspace_name} created', status=200)
@@ -58,10 +72,48 @@ def create_workspace():
 @app.route('/workspace', methods=['PUT'])
 @auth_access
 def update_workspace():
-    pass
+    error_status = 400
+    try:
+        req_json = request.get_json()
+        workspace_id = req_json['workspace_id']
+        workspace_name = req_json['workspace_name']
+        query = {'_id': ObjectId(workspace_id)}
+        new_values = {'$set': {'workspace_name': workspace_name}}
+
+        updated_workspace = db_cli['Workspace'].update_one(query, new_values)
+        if not updated_workspace.modified_count:
+            error_status = 404
+            raise KeyError('Workspace info could not updated at the moment!')
+    except Exception as e:
+        return Response(str(e), status=error_status)
+    return Response('Workspace name updated', status=200)
 
 
-@app.route('/workspace', methods=['DELETE'])
+@app.route('/workspace/<workspace>', methods=['DELETE'])
 @auth_access
-def delete_workspace():
-    pass
+def delete_workspace(workspace):
+    error_status = 400
+    try:
+        email = g.decoded_jwt['email']
+        workspace = db_cli['Workspace'].find_one({'_id': ObjectId(workspace)})
+        if not workspace:
+            error_status = 404
+            raise KeyError('Workspace not found')
+
+        if workspace['email'] != email:
+            error_status = 403
+            raise KeyError('Email does not match the workspace')
+
+        deleted_workspace = db_cli['Workspace'].delete_one({'_id': workspace['_id']})
+        if not deleted_workspace.deleted_count:
+            error_status = 503
+            raise Exception('Workspace could not be deleted')
+
+        deleted_folders = db_cli['Folders'].delete_many({'workspace_id': workspace['_id']})
+        if deleted_folders.deleted_count <= 0:
+            error_status = 503
+            raise Exception('Workspace folders could not be deleted')
+
+    except Exception as e:
+        return Response(str(e), status=error_status)
+    return Response(f'Workspace {workspace["workspace_name"]} successfully deleted', status=200)
