@@ -80,7 +80,28 @@ def create_folder():
 @app.route('/folder', methods=['PUT'])
 @auth_access
 def update_folder():
-    pass
+    error_status = 400
+    try:
+        email = g.decoded_jwt['email']
+        req_json = request.get_json()
+        folder_id = ObjectId(req_json['folder_id'])
+        folder_name = req_json['folder_name']
+        workspace_id = db_cli['Folders'].find_one({'_id': folder_id})['workspace_id']
+        workspace = db_cli['Workspace'].find_one({'_id': workspace_id})
+        if workspace['email'] != email:
+            error_status = 403
+            raise Exception('User not authorized to access this workspace')
+
+        if workspace['root_folder'] == folder_id:
+            error_status = 403
+            raise Exception('Root folder name cannot be updated')
+
+        if not db_cli['Folders'].update_one({'_id': folder_id}, {'$set': {'name': folder_name}}).modified_count:
+            error_status = 500
+            raise Exception('Folder could not be updated at this moment!')
+    except Exception as e:
+        return Response(str(e), status=error_status)
+    return Response('Folder successfully updated', status=200)
 
 
 @app.route('/folder/<folder>', methods=['DELETE'])
