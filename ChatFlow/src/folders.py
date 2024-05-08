@@ -2,28 +2,79 @@ from __main__ import app
 from ChatFlow.middleware.auth import auth_access
 from flask import Response, request, g
 from ChatFlow.db import db_cli
+from bson import ObjectId
 import json
 
 
-@app.route('/folder/<workspace>&<folder>', methods=['GET'])
+@app.route('/folder/<folder>', methods=['GET'])
 @auth_access
-def get_folders(workspace, folder):
-    pass
+def get_folder(folder):
+    error_status = 400
+    try:
+        folder_content = db_cli['Folders'].find_one({'_id': ObjectId(folder)})
+        if not folder_content:
+            error_status = 404
+            raise KeyError('Folder not found')
+
+        workspace = db_cli['Workspace'].find_one({'_id': folder_content['workspace_id']})
+        email = g.decoded_jwt['email']
+        if workspace['email'] != email:
+            error_status = 403
+            raise Exception('User not authorized to access this folder')
+
+        res_dict = {'folders': folder_content['folders'], 'files': folder_content['files'], 'is_root': True}
+        res_json = json.dumps(res_dict, ensure_ascii=False).encode('utf8')
+    except Exception as e:
+        return Response(str(e), status=error_status)
+    return Response(res_json, status=200, mimetype='application/json charset=utf-8')
 
 
 @app.route('/folder', methods=['POST'])
 @auth_access
-def create_folder(folder):
-    pass
+def create_folder():
+    error_status = 400
+    try:
+        email = g.decoded_jwt['email']
+        req_json = request.get_json()
+        workspace_id = req_json['workspace_id']
+        root_folder = req_json['root_folder']
+        folder_name = req_json['folder_name']
+
+        if db_cli['Folders'].find_one({'_id': ObjectId(root_folder)})['workspace_id'] != workspace_id:
+            error_status = 403
+            raise Exception('User not authorized to access this folder')
+
+        if db_cli['Workspace'].find_one({'_id': ObjectId(workspace_id)})['email'] != email:
+            error_status = 403
+            raise Exception('User not authorized to access this workspace')
+
+        query = {'workspace_id': workspace_id,
+                 'name': folder_name,
+                 'root_folder': ObjectId(root_folder),
+                 'folders': [],
+                 'files': [],
+                 'is_root': False
+                 }
+        folder_id = db_cli['Folders'].insert_one(query).inserted_id
+
+        if not db_cli['Folders'].update_one({'_id': ObjectId(root_folder)}, {'$push': {'folder_id': folder_id}}).modified_count:
+            error_status = 404
+            raise Exception('Root folder not found')
+
+        res_dict = {'folder_id': str(folder_id), 'root_folder': root_folder, 'folder_name': folder_name}
+        res_json = json.dumps(res_dict, ensure_ascii=False).encode('utf8')
+    except Exception as e:
+        return Response(str(e), status=error_status)
+    return Response(res_json, status=200, mimetype='application/json charset=utf-8')
 
 
 @app.route('/folder', methods=['PUT'])
 @auth_access
-def update_folder(folder):
+def update_folder():
     pass
 
 
-@app.route('/folder', methods=['DELETE'])
+@app.route('/folder/<folder>', methods=['DELETE'])
 @auth_access
 def delete_folder(folder):
     pass

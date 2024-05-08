@@ -57,6 +57,7 @@ def create_workspace():
 
         query = {'workspace_id': workspace_id,
                  'name': 'root',
+                 'root_folder': None,
                  'folders': [],
                  'files': [],
                  'is_root': True
