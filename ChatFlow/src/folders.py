@@ -22,7 +22,12 @@ def get_folder(folder):
             error_status = 403
             raise Exception('User not authorized to access this folder')
 
-        res_dict = {'folders': folder_content['folders'], 'files': folder_content['files'], 'is_root': True}
+        res_dict = {'folder_name': folder_content['name'],
+                    'root_folder': folder_content['root_folder'],
+                    'folders': folder_content['folders'],
+                    'files': folder_content['files'],
+                    'is_root': folder_content['is_root']
+                    }
         res_json = json.dumps(res_dict, ensure_ascii=False).encode('utf8')
     except Exception as e:
         return Response(str(e), status=error_status)
