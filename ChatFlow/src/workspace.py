@@ -33,7 +33,11 @@ def get_workspace(workspace):
             error_status = 404
             raise KeyError('Workspace not found')
 
-        res_dict = {'folders': root_folder['folders'], 'files': root_folder['files'], 'is_root': True}
+        res_dict = {'folder_id': str(root_folder['_id']),
+                    'folders': root_folder['folders'],
+                    'files': root_folder['files'],
+                    'is_root': True
+                    }
         res_json = json.dumps(res_dict, ensure_ascii=False).encode('utf8')
     except Exception as e:
         return Response(str(e), status=error_status)
@@ -64,7 +68,11 @@ def create_workspace():
                  }
         folder_id = db_cli['Folders'].insert_one(query).inserted_id
 
-        db_cli['Workspace'].update_one({'_id': workspace_id}, {'$set': {'root_folder': folder_id}})
+        if not db_cli['Workspace'].update_one({'_id': workspace_id}, {'$set': {'root_folder': folder_id}}).modified_count:
+            error_status = 500
+            db_cli['Workspace'].delete_one({'_id': workspace_id})
+            db_cli['Folders'].delete_one({'_id': folder_id})
+            raise KeyError('Workspace could not be created')
     except Exception as e:
         return Response(str(e), status=error_status)
     return Response(f'Workspace {workspace_name} created', status=200)
