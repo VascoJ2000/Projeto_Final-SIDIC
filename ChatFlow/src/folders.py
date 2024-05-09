@@ -26,12 +26,20 @@ def get_folder(folder):
         if not folder_content['is_root']:
             root_folder = str(root_folder)
 
+        folder_folders = []
+        for child in folder_content['folders']:
+            folder_folders.append(str(child))
+
+        folder_files = []
+        for child in folder_content['files']:
+            folder_files.append(str(child))
+
         res_dict = {
             'folder_id': str(folder_content['_id']),
             'folder_name': folder_content['name'],
             'root_folder': root_folder,
-            'folders': json.loads(json_util.dumps(folder_content['folders'])),
-            'files': json.loads(json_util.dumps(folder_content['files'])),
+            'folders': folder_folders,
+            'files': folder_files,
             'is_root': folder_content['is_root']
         }
         res_json = json.dumps(res_dict, ensure_ascii=False).encode('utf8')
@@ -68,7 +76,7 @@ def create_folder():
         }
         folder_id = db_cli['Folders'].insert_one(query).inserted_id
 
-        if not db_cli['Folders'].update_one({'_id': root_folder}, {'$push': {'folders': {'folder_id': folder_id, 'folder_name': folder_name}}}).modified_count:
+        if not db_cli['Folders'].update_one({'_id': root_folder}, {'$push': {'folders': folder_id}}).modified_count:
             error_status = 404
             raise Exception('Root folder not found')
 
