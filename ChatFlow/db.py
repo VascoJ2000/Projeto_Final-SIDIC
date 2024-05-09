@@ -10,7 +10,7 @@ load_dotenv()
 
 
 try:
-    client = MongoClient(os.getenv('DB_CLIENT_BACKUP'), server_api=ServerApi('1'))
+    client = MongoClient(os.getenv('DB_CLIENT'), server_api=ServerApi('1'))
     client.admin.command('ping')
 except Exception as e:
     print('Connection to database failed: ' + str(e))
