@@ -37,10 +37,11 @@ def login(email, password):
         refresh_token = generate_token(user_id, email, True)
 
         # Stores Refresh Token in database
-        query = {'user_id': ObjectId(user_id),
-                 'email': email,
-                 'refresh_token': refresh_token
-                 }
+        query = {
+            'user_id': ObjectId(user_id),
+            'email': email,
+            'refresh_token': refresh_token
+        }
         db_cli['Tokens'].insert_one(query)
 
         # Creates a response object and set tokens in cookies
@@ -59,19 +60,20 @@ def signin():
         username = request.json['name']
         user_email = request.json['email']
         password = password_hash(request.json['password'])
-        query = {'name': username,
-                 'email': user_email,
-                 'password': password,
-                 'age': None,
-                 'gender': None,
-                 'country': None,
-                 'city': None,
-                 'address': None,
-                 'phone': None,
-                 'occupation': None,
-                 'logged_in': False,
-                 'verified': False
-                 }
+        query = {
+            'name': username,
+            'email': user_email,
+            'password': password,
+            'age': None,
+            'gender': None,
+            'country': None,
+            'city': None,
+            'address': None,
+            'phone': None,
+            'occupation': None,
+            'logged_in': False,
+            'verified': False
+        }
         db_cli['Users'].insert_one(query)
 
         # Creates verification key, sends it to given email and stores it for confirmation

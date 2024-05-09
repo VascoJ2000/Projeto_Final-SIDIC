@@ -2,7 +2,7 @@ from __main__ import app
 from ChatFlow.middleware.auth import auth_access
 from flask import Response, request, g
 from ChatFlow.db import db_cli
-from bson import ObjectId
+from bson import ObjectId, json_util
 import json
 
 
@@ -23,16 +23,17 @@ def get_folder(folder):
             raise Exception('User not authorized to access this folder')
 
         root_folder = folder_content['root_folder']
-        if folder_content['root_folder'] is not None:
+        if not folder_content['is_root']:
             root_folder = str(root_folder)
 
-        res_dict = {'folder_id': str(folder_content['_id']),
-                    'folder_name': folder_content['name'],
-                    'root_folder': root_folder,
-                    'folders': folder_content['folders'],
-                    'files': folder_content['files'],
-                    'is_root': folder_content['is_root']
-                    }
+        res_dict = {
+            'folder_id': str(folder_content['_id']),
+            'folder_name': folder_content['name'],
+            'root_folder': root_folder,
+            'folders': json.loads(json_util.dumps(folder_content['folders'])),
+            'files': json.loads(json_util.dumps(folder_content['files'])),
+            'is_root': folder_content['is_root']
+        }
         res_json = json.dumps(res_dict, ensure_ascii=False).encode('utf8')
     except Exception as e:
         return Response(str(e), status=error_status)
@@ -57,13 +58,14 @@ def create_folder():
             error_status = 403
             raise Exception('User not authorized to access this workspace')
 
-        query = {'workspace_id': workspace_id,
-                 'name': folder_name,
-                 'root_folder': root_folder,
-                 'folders': [],
-                 'files': [],
-                 'is_root': False
-                 }
+        query = {
+            'workspace_id': workspace_id,
+            'name': folder_name,
+            'root_folder': root_folder,
+            'folders': [],
+            'files': [],
+            'is_root': False
+        }
         folder_id = db_cli['Folders'].insert_one(query).inserted_id
 
         if not db_cli['Folders'].update_one({'_id': root_folder}, {'$push': {'folders': {'folder_id': folder_id, 'folder_name': folder_name}}}).modified_count:

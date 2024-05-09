@@ -1,7 +1,7 @@
 from __main__ import app
 from ChatFlow.middleware.auth import auth_access
 from flask import Response, request, g
-from ChatFlow.db import db_cli
+from ChatFlow.db import db_cli, fs
 from bson import ObjectId
 import json
 
@@ -11,6 +11,7 @@ import json
 def get_file(file):
     error_status = 400
     try:
+        file = fs
         file_content = db_cli['Files'].find_one({'_id': ObjectId(file)})
         if not file_content:
             error_status = 404
