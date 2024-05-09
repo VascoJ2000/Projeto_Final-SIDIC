@@ -12,15 +12,16 @@ def get_workspaces():
     error_status = 400
     try:
         email = g.decoded_jwt['email']
-        res_dict = {'workspaces': []}
+        res_dict = {'workspaces': []}  # Defines an array to place all the workspaces info that belong to user
 
+        # For each array found in the database gets the info necessary and places it in the array
         for entry in db_cli['Workspace'].find({'email': email}):
             res_dict['workspaces'].append({
                 'workspace_name': entry['workspace_name'],
                 "workspace_id": str(entry['_id']),
                 "root_folder": str(entry['root_folder'])
             })
-        res_json = json.dumps(res_dict, ensure_ascii=False).encode('utf8')
+        res_json = json.dumps(res_dict, ensure_ascii=False).encode('utf8')  # Ensures the json is readable
     except Exception as e:
         return Response(str(e), status=error_status)
     return Response(res_json, status=200, mimetype='application/json charset=utf-8')
@@ -40,6 +41,7 @@ def create_workspace():
             'workspace_name': workspace_name,
             'root_folder': None
         }
+        # Gets the workspace id, so it can be placed in the root folder
         workspace_id = db_cli['Workspace'].insert_one(query).inserted_id
 
         query = {
@@ -50,8 +52,10 @@ def create_workspace():
             'files': [],
             'is_root': True
         }
+        # Gets the root folder id, so it can be placed back on the workspace info
         folder_id = db_cli['Folders'].insert_one(query).inserted_id
 
+        # if anything goes wrong deletes everything, so it doesn't clog the database with useless data
         if not db_cli['Workspace'].update_one({'_id': workspace_id}, {'$set': {'root_folder': folder_id}}).modified_count:
             error_status = 500
             db_cli['Workspace'].delete_one({'_id': workspace_id})
@@ -64,7 +68,7 @@ def create_workspace():
 
 @app.route('/workspace', methods=['PUT'])
 @auth_access
-def update_workspace():
+def update_workspace():  # Only changes the name
     error_status = 400
     try:
         req_json = request.get_json()
@@ -89,21 +93,21 @@ def delete_workspace(workspace):
     try:
         email = g.decoded_jwt['email']
         workspace = db_cli['Workspace'].find_one({'_id': ObjectId(workspace)})
-        if not workspace:
+        if not workspace:  # Confirms if that workspace exists
             error_status = 404
             raise KeyError('Workspace not found')
 
-        if workspace['email'] != email:
+        if workspace['email'] != email:  # Confirms if the workspace belong to user
             error_status = 403
             raise KeyError('Email does not match the workspace')
 
         deleted_workspace = db_cli['Workspace'].delete_one({'_id': workspace['_id']})
-        if not deleted_workspace.deleted_count:
+        if not deleted_workspace.deleted_count:  # Checks if the workspace was deleted
             error_status = 503
             raise Exception('Workspace could not be deleted')
 
         deleted_folders = db_cli['Folders'].delete_many({'workspace_id': workspace['_id']})
-        if deleted_folders.deleted_count <= 0:
+        if deleted_folders.deleted_count <= 0:  # Confirms if at least the root folder was deleted
             error_status = 503
             raise Exception('Workspace folders could not be deleted')
 
