@@ -52,13 +52,23 @@ def post_file(folder):
     return Response(res_json, status=200, mimetype='application/json charset=utf-8')
 
 
-@app.route('/file', methods=['PUT'])
+@app.route('/file/<file>', methods=['DELETE'])
 @auth_access
-def put_file():
-    pass
+def delete_file(file):
+    error_status = 400
+    try:
+        file = ObjectId(file)
+        email = g.decoded_jwt['email']
+        file_info = fs.get(file)
+        workspace_id = file_info.workspace_id
+        folder_id = file_info.root_folder
 
+        if db_cli['Workspace'].find_one({'_id': workspace_id})['email'] != email:
+            error_status = 403
+            raise Exception('User not authorized to access this workspace')
 
-@app.route('/file', methods=['DELETE'])
-@auth_access
-def delete_file():
-    pass
+        fs.delete(file)
+        db_cli['Folders'].update_one({'_id': folder_id}, {'$pull': {'files': file}})
+    except Exception as e:
+        return Response(str(e), status=error_status)
+    return Response(None, status=204)
