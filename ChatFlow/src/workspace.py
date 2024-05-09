@@ -15,29 +15,11 @@ def get_workspaces():
         res_dict = {'workspaces': []}
 
         for entry in db_cli['Workspace'].find({'email': email}):
-            res_dict['workspaces'].append({'workspace_name': entry['workspace_name'], "workspace_id": str(entry['_id'])})
-        res_json = json.dumps(res_dict, ensure_ascii=False).encode('utf8')
-    except Exception as e:
-        return Response(str(e), status=error_status)
-    return Response(res_json, status=200, mimetype='application/json charset=utf-8')
-
-
-@app.route('/workspace/<workspace>', methods=['GET'])
-@auth_access
-def get_workspace(workspace):
-    error_status = 400
-    try:
-        workspace_entry = db_cli['Workspace'].find_one({'_id': ObjectId(workspace)})
-        root_folder = db_cli['Folders'].find_one({'_id': workspace_entry['root_folder']})
-        if not workspace_entry or not root_folder:
-            error_status = 404
-            raise KeyError('Workspace not found')
-
-        res_dict = {'folder_id': str(root_folder['_id']),
-                    'folders': root_folder['folders'],
-                    'files': root_folder['files'],
-                    'is_root': True
-                    }
+            res_dict['workspaces'].append({
+                'workspace_name': entry['workspace_name'],
+                "workspace_id": str(entry['_id']),
+                "root_folder": str(entry['root_folder'])
+            })
         res_json = json.dumps(res_dict, ensure_ascii=False).encode('utf8')
     except Exception as e:
         return Response(str(e), status=error_status)
@@ -52,20 +34,22 @@ def create_workspace():
         user_id = g.decoded_jwt['user_id']
         email = g.decoded_jwt['email']
         workspace_name = request.get_json()['workspace_name']
-        query = {'user_id': user_id,
-                 'email': email,
-                 'workspace_name': workspace_name,
-                 'root_folder': None
-                 }
+        query = {
+            'user_id': ObjectId(user_id),
+            'email': email,
+            'workspace_name': workspace_name,
+            'root_folder': None
+        }
         workspace_id = db_cli['Workspace'].insert_one(query).inserted_id
 
-        query = {'workspace_id': workspace_id,
-                 'name': 'root',
-                 'root_folder': None,
-                 'folders': [],
-                 'files': [],
-                 'is_root': True
-                 }
+        query = {
+            'workspace_id': workspace_id,
+            'name': 'root',
+            'root_folder': None,
+            'folders': [],
+            'files': [],
+            'is_root': True
+        }
         folder_id = db_cli['Folders'].insert_one(query).inserted_id
 
         if not db_cli['Workspace'].update_one({'_id': workspace_id}, {'$set': {'root_folder': folder_id}}).modified_count:
