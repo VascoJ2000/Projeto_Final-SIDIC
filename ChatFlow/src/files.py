@@ -16,41 +16,33 @@ def get_file(file):
             error_status = 404
             raise KeyError('File not found')
 
-        workspace = db_cli['Workspace'].find_one({'_id': file_content['workspace_id']})
+        workspace = db_cli['Workspace'].find_one({'_id': file_content.workspace_id})
         email = g.decoded_jwt['email']
         if workspace['email'] != email:
             error_status = 403
             raise Exception('User not authorized to access this file')
-
-        res_json = json_util.dumps(file_content)
     except Exception as e:
         return Response(str(e), status=error_status)
-    return Response(res_json, status=200, mimetype='application/json charset=utf-8')
+    return Response(file_content.read(), status=200, mimetype='application/octet-stream')
 
 
-@app.route('/file', methods=['POST'])
+@app.route('/file/<folder>', methods=['POST'])
 @auth_access
-def post_file():
+def post_file(folder):
     error_status = 400
     try:
         email = g.decoded_jwt['email']
-        req_json = request.get_json()
-        workspace_id = ObjectId(req_json['workspace_id'])
-        root_folder = ObjectId(req_json['root_folder'])
-        file = req_json['file']
-
-        if db_cli['Folders'].find_one({'_id': root_folder})['workspace_id'] != workspace_id:
-            error_status = 403
-            raise Exception('Root folder does not belong to this workspace!')
+        file = request.files['file']
+        folder = ObjectId(folder)
+        workspace_id = db_cli['Folders'].find_one({'_id': folder})['workspace_id']
 
         if db_cli['Workspace'].find_one({'_id': ObjectId(workspace_id)})['email'] != email:
             error_status = 403
             raise Exception('User not authorized to access this workspace')
 
-        file_id = fs.put(file, filename=file['originalname'], root_folder=root_folder, workspace_id=workspace_id)
-        print(file_id)
+        file_id = fs.put(file, filename=file.filename, root_folder=folder, workspace_id=workspace_id)
 
-        if not db_cli['Folders'].update_one({'_id': root_folder}, {'$push': {'files': {'file_id': file_id, 'file_name': filename}}}).modified_count:
+        if not db_cli['Folders'].update_one({'_id': folder}, {'$push': {'files': file_id}}).modified_count:
             error_status = 404
             raise Exception('Root folder not found')
 
