@@ -1,6 +1,6 @@
 from __main__ import app
 from flask import request, Response, make_response, render_template
-from db.client import db_cli
+from ChatFlow.db import db_cli
 from dotenv import load_dotenv
 from argon2 import PasswordHasher
 from bson import ObjectId
@@ -18,11 +18,14 @@ load_dotenv()
 def login(email, password):
     try:
         # Checks if user is not already verified
-        entry_data = db_cli.db['Users'].find_one({'email': email})
+        entry_data = db_cli['Users'].find_one({'email': email})
         if not entry_data:
             raise KeyError(f'User {email} is not registered')
         if not entry_data['verified']:
             return Response('User is not verified', status=409)
+
+        # Changes user status to logged_in = true
+        db_cli['Users'].update_one({'email': email}, {'$set': {'logged_in': True}})
 
         # Gets user info from database and verifies if password matches
         entry_password = entry_data['password']
@@ -34,11 +37,12 @@ def login(email, password):
         refresh_token = generate_token(user_id, email, True)
 
         # Stores Refresh Token in database
-        query = {'user_id': ObjectId(user_id),
-                 'email': email,
-                 'refresh_token': refresh_token
-                 }
-        db_cli.db['Tokens'].insert_one(query)
+        query = {
+            'user_id': ObjectId(user_id),
+            'email': email,
+            'refresh_token': refresh_token
+        }
+        db_cli['Tokens'].insert_one(query)
 
         # Creates a response object and set tokens in cookies
         res = make_response("Login successful", 200)
@@ -56,12 +60,21 @@ def signin():
         username = request.json['name']
         user_email = request.json['email']
         password = password_hash(request.json['password'])
-        query = {'name': username,
-                 'email': user_email,
-                 'password': password,
-                 'verified': False
-                 }
-        db_cli.db['Users'].insert_one(query)
+        query = {
+            'name': username,
+            'email': user_email,
+            'password': password,
+            'age': None,
+            'gender': None,
+            'country': None,
+            'city': None,
+            'address': None,
+            'phone': None,
+            'occupation': None,
+            'logged_in': False,
+            'verified': False
+        }
+        db_cli['Users'].insert_one(query)
 
         # Creates verification key, sends it to given email and stores it for confirmation
         key = generate_verification_key()
@@ -70,7 +83,7 @@ def signin():
                  }
         send_verification_email(user_email, key)
         print(key)  # TODO: Remove print after smtp is implemented
-        db_cli.db['Verify'].insert_one(query)
+        db_cli['Verify'].insert_one(query)
     except errors.DuplicateKeyError:
         return Response('Email already in use!', status=409)
     except Exception as e:
@@ -81,9 +94,13 @@ def signin():
 @app.route('/auth', methods=['DELETE'])
 def logout():
     try:
+        # Checks the token and then deletes copies from database
         refresh_token = request.cookies.get('chatflow-refresh_token')
-        user_id = db_cli.db['Tokens'].find_one({'refresh_token': refresh_token})['user_id']
-        db_cli.db['Tokens'].delete_many({'user_id': user_id})
+        user_id = db_cli['Tokens'].find_one({'refresh_token': refresh_token})['user_id']
+        db_cli['Tokens'].delete_many({'user_id': user_id})
+
+        # Changes user status to logged_in = false
+        db_cli['Users'].update_one({'_id': user_id}, {'$set': {'logged_in': False}})
     except Exception as e:
         return Response(str(e), status=403)
     return Response('Logout successful! You can close the browser.', status=200)
@@ -91,7 +108,22 @@ def logout():
 
 @app.route('/auth/token', methods=['GET'])
 def token():
-    pass
+    error_status = 401
+    try:
+        # Checks the refresh token and then creates access token and sends it
+        refresh_token = request.cookies.get('chatflow-refresh_token')
+        token_info = db_cli['Tokens'].find_one({'refresh_token': refresh_token})
+        if not token_info:
+            raise Exception('Token not found in database')
+
+        user_info = db_cli['Users'].find_one({'_id': token_info['user_id']})
+        access_token = generate_token(str(user_info['_id']), token_info['email'], False)
+
+        res = make_response("Login successful", 200)
+        res.set_cookie('chatflow-access_token', access_token)
+    except Exception as e:
+        return Response(str(e), status=error_status)
+    return res
 
 
 # Returns the html page where people can insert the code
@@ -105,23 +137,23 @@ def verify_email():
     try:
         user_email = request.json['email']
         # Checks if user is not already verified
-        entry_data = db_cli.get_entry('Users', 'email', user_email)[0]
+        entry_data = db_cli['Users'].find_one({'email': user_email})
+        if not entry_data:
+            raise KeyError(f'User {user_email} is not registered')
         if entry_data['verified']:
             return Response('User is already verified', status=409)
 
         # Confirms if key sent is the same as in database
-        entry_data = db_cli.get_entry('Verify', 'email', user_email)[0]
+        entry_data = db_cli['Verify'].find_one({'email': user_email})
         key = request.json['key']
         if entry_data['key'] != key:
             return Response('Invalid key', status=403)
+        db_cli['Verify'].delete_one({'email': user_email})
 
         # Changes user status to verified on database
-        json_data = {"coll": "Users",
-                     "identifier": "email",
-                     "entry_id": user_email,
-                     "new_values": {"$set": {"verified": True}}
-                     }
-        db_cli.update_entry(json_data)
+        query = {"email": user_email }
+        new_values = {"$set": {"verified": True}}
+        db_cli['Users'].update_one(query, new_values)
     except Exception as e:
         return Response(str(e), status=400)
     return Response('User successfully verified', status=202)
