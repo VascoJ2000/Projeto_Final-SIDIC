@@ -108,7 +108,21 @@ def logout():
 
 @app.route('/auth/token', methods=['GET'])
 def token():
-    pass
+    error_status = 401
+    try:
+        # Checks the refresh token and then creates access token and sends it
+        refresh_token = request.cookies.get('chatflow-refresh_token')
+        token_info = db_cli['Tokens'].find_one({'refresh_token': refresh_token})
+        if not token_info:
+            raise Exception('Token not found in database')
+
+        user_info = db_cli['Users'].find_one({'_id': token_info['user_id']})
+        access_token = generate_token(str(user_info['_id']), token_info['email'], False)
+        res = make_response("Login successful", 200)
+        res.set_cookie('chatflow-access_token', access_token)
+    except Exception as e:
+        return Response(str(e), status=error_status)
+    return res
 
 
 # Returns the html page where people can insert the code
