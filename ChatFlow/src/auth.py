@@ -118,6 +118,7 @@ def token():
 
         user_info = db_cli['Users'].find_one({'_id': token_info['user_id']})
         access_token = generate_token(str(user_info['_id']), token_info['email'], False)
+
         res = make_response("Login successful", 200)
         res.set_cookie('chatflow-access_token', access_token)
     except Exception as e:

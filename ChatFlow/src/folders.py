@@ -2,7 +2,7 @@ from __main__ import app
 from ChatFlow.middleware.auth import auth_access
 from flask import Response, request, g
 from ChatFlow.db import db_cli
-from bson import ObjectId, json_util
+from bson import ObjectId
 import json
 
 
@@ -89,7 +89,7 @@ def create_folder():
 
 @app.route('/folder', methods=['PUT'])
 @auth_access
-def update_folder():
+def update_folder():  # Only changes the name
     error_status = 400
     try:
         email = g.decoded_jwt['email']
