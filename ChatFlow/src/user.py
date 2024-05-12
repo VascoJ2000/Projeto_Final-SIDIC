@@ -1,5 +1,5 @@
 from __main__ import app
-from middleware.auth import auth_access
+from ChatFlow.middleware.auth import auth_access
 from flask import Response, request, g
 from ChatFlow.db import db_cli
 import json
