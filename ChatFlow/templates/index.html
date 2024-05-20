@@ -6,9 +6,6 @@
       <title>SIDIC</title>
 
       <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-      <link rel="stylesheet" href="https://pyscript.net/releases/2024.3.1/core.css">
-
-      <script type="module" src="https://pyscript.net/releases/2024.3.1/core.js"></script>
 
       <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.10.2/css/all.css"/>
       <link rel="stylesheet" href="../static/Styles/index.css"/> 
@@ -60,13 +57,13 @@
       <div id="carouselExampleFade" class="carousel slide carousel-fade" data-bs-ride="carousel">
         <div class="carousel-inner">
           <div class="carousel-item active">
-            <img src="..." class="d-block w-100" alt="...">
+            <img src="" class="d-block w-100" alt="...">
           </div>
           <div class="carousel-item">
-            <img src="..." class="d-block w-100" alt="...">
+            <img src="" class="d-block w-100" alt="...">
           </div>
           <div class="carousel-item">
-            <img src="..." class="d-block w-100" alt="...">
+            <img src="" class="d-block w-100" alt="...">
           </div>
         </div>
         <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleFade" data-bs-slide="prev">
@@ -134,7 +131,7 @@
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title" id="exampleModalLabel">
+            <h5 class="modal-title">
               Registo de novo utilizador
             </h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -172,7 +169,7 @@
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title" id="exampleModalLabel">
+            <h5 class="modal-title">
               Insira suas credenciais
             </h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="btnLoginClose"></button>
@@ -189,10 +186,6 @@
               <p id="passErroLogin"></p>
               <p id="statusLogin"></p>
             </div>
-            <div class="mb-3 form-check">
-              <input type="checkbox" class="form-check-input" id="rememberMe"/>
-              <label class="form-check-label" for="rememberMe">Lembrar-me</label>
-            </div>
             <div class="modal-footer d-block">
               <p id="pSignup" class="float-start">
                 Sem conta ainda? <a href="#">Registe-se</a>
@@ -200,7 +193,7 @@
               <button class="btn btn-warning float-end" data-bs-dismiss="modal">
                 Cancelar
               </button>
-              <button class="btn btn-success float-end" id="btnSubmitLogin" onclick="postLogin()" data-bs-dismiss="modal">
+              <button class="btn btn-success float-end" id="btnSubmitLogin" onclick="getLogin()" data-bs-dismiss="modal">
                 Login
               </button>
             </div>
@@ -265,5 +258,6 @@
     
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
     <script src="../static/js/index.js"></script>
+    <script src="../static/js/auth.js"></script>
   </body>
 </html>
