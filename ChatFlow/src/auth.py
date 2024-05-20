@@ -57,11 +57,10 @@ def login(email, password):
 def signin():
     try:
         # Extracts the information send by the client and resends it to the database for storage
-        username = request.json['name']
         user_email = request.json['email']
         password = password_hash(request.json['password'])
         query = {
-            'name': username,
+            'name': None,
             'email': user_email,
             'password': password,
             'age': None,
