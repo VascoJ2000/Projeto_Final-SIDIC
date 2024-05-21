@@ -1,8 +1,10 @@
 from flask import Flask, render_template
+from flask_cors import CORS
 import signal
 import sys
 
 app = Flask(__name__)
+CORS(app)
 
 # import routes ***DON'T REMOVE***
 import ChatFlow.src
@@ -24,4 +26,4 @@ signal.signal(signal.SIGINT, shutdown_server)
 signal.signal(signal.SIGTERM, shutdown_server)
 
 if __name__ == '__main__':
-    app.run(debug=True, use_reloader=False)
+    app.run(debug=True, use_reloader=False, port=80)
