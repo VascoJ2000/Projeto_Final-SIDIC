@@ -1,4 +1,4 @@
-const url = 'http://localhost:5000'
+const url = 'http://localhost'
 
 function login(email) {
     const notLogged = document.getElementsByClassName('loggedOut');
@@ -25,7 +25,6 @@ async function getLogin(){
     const password = document.getElementById('senhaLogin').value;
     const res = await fetch(url + `/auth/${email}&${password}`, {
         method: 'GET',
-        headers: { 'Content-Type': 'application/json' },
     }).catch(err => console.log(err))
 
     if(res.ok) {
