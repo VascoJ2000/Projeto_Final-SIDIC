@@ -1,5 +1,4 @@
-from __main__ import app
-from flask import request, Response, make_response, render_template
+from flask import request, Response, make_response, render_template, Blueprint
 from ChatFlow.db import db_cli
 from dotenv import load_dotenv
 from argon2 import PasswordHasher
@@ -13,8 +12,10 @@ import smtplib
 
 load_dotenv()
 
+auth_bp = Blueprint('auth', __name__)
 
-@app.route('/auth/<email>&<password>', methods=['GET'])
+
+@auth_bp.route('/auth/<email>&<password>', methods=['GET'])
 def login(email, password):
     try:
         # Checks if user is not already verified
@@ -53,15 +54,14 @@ def login(email, password):
     return res
 
 
-@app.route('/auth', methods=['POST'])
+@auth_bp.route('/auth', methods=['POST'])
 def signin():
     try:
         # Extracts the information send by the client and resends it to the database for storage
-        username = request.json['name']
         user_email = request.json['email']
         password = password_hash(request.json['password'])
         query = {
-            'name': username,
+            'name': None,
             'email': user_email,
             'password': password,
             'age': None,
@@ -91,7 +91,7 @@ def signin():
     return Response('User successfully registered', status=201)
 
 
-@app.route('/auth', methods=['DELETE'])
+@auth_bp.route('/auth', methods=['DELETE'])
 def logout():
     try:
         # Checks the token and then deletes copies from database
@@ -106,7 +106,7 @@ def logout():
     return Response('Logout successful! You can close the browser.', status=200)
 
 
-@app.route('/auth/token', methods=['GET'])
+@auth_bp.route('/auth/token', methods=['GET'])
 def token():
     error_status = 401
     try:
@@ -127,12 +127,12 @@ def token():
 
 
 # Returns the html page where people can insert the code
-@app.route('/auth/verify', methods=['GET'])
+@auth_bp.route('/auth/verify', methods=['GET'])
 def verify_email_page(self):
     return render_template('verify_email.html')  # TODO: Create verify email html page
 
 
-@app.route('/auth/verify', methods=['POST'])
+@auth_bp.route('/auth/verify', methods=['POST'])
 def verify_email():
     try:
         user_email = request.json['email']
