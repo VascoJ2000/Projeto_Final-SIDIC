@@ -1,12 +1,13 @@
-from __main__ import app
 from ChatFlow.middleware.auth import auth_access
-from flask import Response, request, g
+from flask import Response, request, g, Blueprint
 from ChatFlow.db import db_cli
 from bson import ObjectId
 import json
 
+folder_bp = Blueprint('folder', __name__)
 
-@app.route('/folder/<folder>', methods=['GET'])
+
+@folder_bp.route('/folder/<folder>', methods=['GET'])
 @auth_access
 def get_folder(folder):
     error_status = 400
@@ -48,7 +49,7 @@ def get_folder(folder):
     return Response(res_json, status=200, mimetype='application/json charset=utf-8')
 
 
-@app.route('/folder', methods=['POST'])
+@folder_bp.route('/folder', methods=['POST'])
 @auth_access
 def create_folder():
     error_status = 400
@@ -87,7 +88,7 @@ def create_folder():
     return Response(res_json, status=200, mimetype='application/json charset=utf-8')
 
 
-@app.route('/folder', methods=['PUT'])
+@folder_bp.route('/folder', methods=['PUT'])
 @auth_access
 def update_folder():  # Only changes the name
     error_status = 400
@@ -114,7 +115,7 @@ def update_folder():  # Only changes the name
     return Response('Folder successfully updated', status=200)
 
 
-@app.route('/folder/<folder>', methods=['DELETE'])
+@folder_bp.route('/folder/<folder>', methods=['DELETE'])
 @auth_access
 def delete_folder(folder):
     error_status = 400

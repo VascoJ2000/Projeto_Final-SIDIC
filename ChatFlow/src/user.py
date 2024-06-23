@@ -1,11 +1,12 @@
-from __main__ import app
 from ChatFlow.middleware.auth import auth_access
-from flask import Response, request, g
+from flask import Response, request, g, Blueprint
 from ChatFlow.db import db_cli
 import json
 
+user_bp = Blueprint('user', __name__)
 
-@app.route('/user', methods=['GET'])
+
+@user_bp.route('/user', methods=['GET'])
 @auth_access
 def get_user():
     try:
@@ -31,7 +32,7 @@ def get_user():
     return Response(res_json, status=200, mimetype='application/json charset=utf-8')
 
 
-@app.route('/user', methods=['PUT'])
+@user_bp.route('/user', methods=['PUT'])
 @auth_access
 def update_user():
     try:
@@ -54,7 +55,7 @@ def update_user():
     return Response('User info successfully updated', status=200)
 
 
-@app.route('/user', methods=['DELETE'])
+@user_bp.route('/user', methods=['DELETE'])
 @auth_access
 def delete_user():
     error_status = 400
