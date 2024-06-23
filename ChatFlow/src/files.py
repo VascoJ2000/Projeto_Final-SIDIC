@@ -1,12 +1,13 @@
-from __main__ import app
 from ChatFlow.middleware.auth import auth_access
-from flask import Response, request, g
+from flask import Response, request, g, Blueprint
 from ChatFlow.db import db_cli, fs
 from bson import ObjectId, json_util
 import json
 
+files_bp = Blueprint('files', __name__)
 
-@app.route('/file/<file>', methods=['GET'])
+
+@files_bp.route('/file/<file>', methods=['GET'])
 @auth_access
 def get_file(file):
     error_status = 400
@@ -26,7 +27,7 @@ def get_file(file):
     return Response(file_content.read(), status=200, mimetype='application/octet-stream')
 
 
-@app.route('/file/<folder>', methods=['POST'])
+@files_bp.route('/file/<folder>', methods=['POST'])
 @auth_access
 def post_file(folder):
     error_status = 400
@@ -52,7 +53,7 @@ def post_file(folder):
     return Response(res_json, status=200, mimetype='application/json charset=utf-8')
 
 
-@app.route('/file/<file>', methods=['DELETE'])
+@files_bp.route('/file/<file>', methods=['DELETE'])
 @auth_access
 def delete_file(file):
     error_status = 400

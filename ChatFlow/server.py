@@ -2,12 +2,10 @@ from flask import Flask, render_template
 from flask_cors import CORS
 import signal
 import sys
+import ChatFlow
 
-app = Flask(__name__)
+app = ChatFlow.create_app()
 CORS(app)
-
-# import routes ***DON'T REMOVE***
-import ChatFlow.src
 
 
 @app.route('/', methods=['GET', 'POST'])

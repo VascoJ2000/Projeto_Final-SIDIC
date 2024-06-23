@@ -1,13 +1,14 @@
-from __main__ import app
 from ChatFlow.middleware.auth import auth_access
-from flask import Response, request, g
+from flask import Response, request, g, Blueprint
 from ChatFlow.db import db_cli
 from ChatFlow.chatbot import chatgpt_response
 from bson import ObjectId
 import json
 
+chat_bp = Blueprint('chat', __name__)
 
-@app.route('/chats', methods=['POST'])
+
+@chat_bp.route('/chats', methods=['POST'])
 @auth_access
 def chatbot():
     try:
@@ -66,7 +67,7 @@ def chatbot():
     return Response(res_json, status=200, mimetype='application/json charset=utf-8')
 
 
-@app.route('/chats/<chat_id>', methods=['DELETE'])
+@chat_bp.route('/chats/<chat_id>', methods=['DELETE'])
 @auth_access
 def delete_conversation(chat_id):
     error_status = 400

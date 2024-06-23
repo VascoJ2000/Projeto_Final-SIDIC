@@ -1,12 +1,13 @@
-from __main__ import app
 from ChatFlow.middleware.auth import auth_access
-from flask import Response, request, g
+from flask import Response, request, g, Blueprint
 from ChatFlow.db import db_cli
 from bson import ObjectId
 import json
 
+workspace_bp = Blueprint('workspace', __name__)
 
-@app.route('/workspace', methods=['GET'])
+
+@workspace_bp.route('/workspace', methods=['GET'])
 @auth_access
 def get_workspaces():
     error_status = 400
@@ -27,7 +28,7 @@ def get_workspaces():
     return Response(res_json, status=200, mimetype='application/json charset=utf-8')
 
 
-@app.route('/workspace', methods=['POST'])
+@workspace_bp.route('/workspace', methods=['POST'])
 @auth_access
 def create_workspace():
     error_status = 400
@@ -66,7 +67,7 @@ def create_workspace():
     return Response(f'Workspace {workspace_name} created', status=200)
 
 
-@app.route('/workspace', methods=['PUT'])
+@workspace_bp.route('/workspace', methods=['PUT'])
 @auth_access
 def update_workspace():  # Only changes the name
     error_status = 400
@@ -86,7 +87,7 @@ def update_workspace():  # Only changes the name
     return Response('Workspace name updated', status=200)
 
 
-@app.route('/workspace/<workspace>', methods=['DELETE'])
+@workspace_bp.route('/workspace/<workspace>', methods=['DELETE'])
 @auth_access
 def delete_workspace(workspace):
     error_status = 400
