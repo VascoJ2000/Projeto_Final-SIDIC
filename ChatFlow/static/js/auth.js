@@ -13,6 +13,7 @@ function login(email) {
         logged[i].style.display = "block";
     }
     navEmail.innerHTML = email
+    getChats()
 }
 
 function logoff() {

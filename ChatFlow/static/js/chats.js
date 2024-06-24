@@ -1,68 +1,87 @@
-const chatInput = null
-const chatHistory = null
+const chatInput = document.getElementById('message')
+const chatHistory = document.getElementById('chat-history')
+const loading = document.getElementById('loading')
 let currentChat = null
+
+const asideChat = document.getElementById('asideChat')
 
 
 function selectChat(chatName) {
     currentChat = chatName
+    chatHistory.innerHTML = ''
 }
 
-async function getChats(){
-    await fetch(url + `/chats`, {
+function getChats(){
+    fetch(url + `/chats`, {
         method: 'GET',
     }).then(res => {
         if(res.ok) {
-            console.log(res.text())
-            loadChats(res.json())
+            return res.json()
         }
-    }).catch(err => console.log(err))
+    }).then(data => loadChats(data))
+    .catch(err => console.log(err))
 }
 
-async function getChatMessages(chat_id) {
-    currentChat = chat_id
-    await fetch(url + `/chat/${chat_id}`, {
+function getChatMessages(chat_id) {
+    selectChat(chat_id)
+    loading.innerHTML = 'Loading chat...'
+    loading.style.display = 'block'
+    fetch(url + `/chat/${chat_id}`, {
         method: 'GET',
     }).then(res => {
         if(res.ok) {
-            console.log(res.text())
-            loadChatMessages(res.json())
+            loading.style.display = 'none'
+            return res.json()
         }
-    }).catch(err => console.log(err))
+    }).then(data => loadChatMessages(data))
+    .catch(err => {
+        console.log(err)
+        loading.innerHTML = 'Could not load messages!'
+    })
 }
 
-async function sendMessage() {
-    await fetch(url + `/chats`, {
+function sendMessage() {
+    const mes = chatInput.value.trim()
+    fetch(url + `/chats`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-            message: chatInput.value.trim(),
-            chat_id: false
+            message: mes,
+            chat_id: currentChat == null ? false : currentChat
         }),
     }).then(res => {
         if(res.ok) {
-            console.log(res.text())
-            mesReceived(res.json())
+            return res.json()
         }
+    }).then(data => {
+        if(currentChat == null){
+            getChats()
+            selectChat(data.chat_id)
+        }
+        addToChat({role: 'user', content: mes})
+        return mesReceived(data)
     }).catch(err => console.log(err))
 }
 
 function loadChats(payload){
-
+    asideChat.innerHTML = ''
+    console.log(payload)
+    for(let i = 0; i<payload.length; i++){
+        asideChat.innerHTML += `<li><a href="#" class="d-inline-flex text-white rounded" onclick="getChatMessages('${payload[i].chat_id}')">${payload[i].name}</a></li>`
+    }
 }
 
-function loadChatMessages(chat){
-    const mes = chat.messages
+function loadChatMessages(mes){
     for (let i = 0; i<mes.length; i++) {
         console.log(mes[i])
-        addToChat(mes[i])
+        addToChat(mes[i].message)
     }
 }
 
 function mesReceived(payload){
-    const mes = JSON.parse(payload.body)
-    addToChat(mes)
+    addToChat(payload.message)
 }
 
 function addToChat(mes){
