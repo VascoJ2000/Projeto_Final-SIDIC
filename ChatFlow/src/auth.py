@@ -15,9 +15,13 @@ load_dotenv()
 auth_bp = Blueprint('auth', __name__)
 
 
-@auth_bp.route('/auth/<email>&<password>', methods=['GET'])
-def login(email, password):
+@auth_bp.route('/auth/login', methods=['POST'])
+def login():
     try:
+        # Extracts the information send by the client
+        email = request.json['email']
+        password = request.json['password']
+
         # Checks if user is not already verified
         entry_data = db_cli['Users'].find_one({'email': email})
         if not entry_data:
@@ -54,8 +58,8 @@ def login(email, password):
     return res
 
 
-@auth_bp.route('/auth', methods=['POST'])
-def signin():
+@auth_bp.route('/auth/signup', methods=['POST'])
+def signup():
     try:
         # Extracts the information send by the client and resends it to the database for storage
         user_email = request.json['email']
