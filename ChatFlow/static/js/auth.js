@@ -1,4 +1,4 @@
-const url = 'http://localhost'
+const url = window.location.origin;
 
 function login(email) {
     const notLogged = document.getElementsByClassName('loggedOut');
@@ -13,6 +13,7 @@ function login(email) {
         logged[i].style.display = "block";
     }
     navEmail.innerHTML = email
+    getChats()
 }
 
 function logoff() {
@@ -20,22 +21,10 @@ function logoff() {
 }
 
 // Auth
-async function getLogin(){
+async function postLogin(){
     const email = document.getElementById('usernameLogin').value;
     const password = document.getElementById('senhaLogin').value;
-    const res = await fetch(url + `/auth/${email}&${password}`, {
-        method: 'GET',
-    }).catch(err => console.log(err))
-
-    if(res.ok) {
-        login(email)
-    }
-}
-
-async function postSignup(){
-    const email = document.getElementById('usernameSignup').value;
-    const password = document.getElementById('senhaSignup').value;
-    const res = await fetch('/auth', {
+    await fetch(url + `/auth/login`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -44,11 +33,32 @@ async function postSignup(){
             email: email,
             password: password
         }),
+    }).then(res => {
+        if(res.ok) {
+            console.log(res.text())
+            login(email)
+        }
     }).catch(err => console.log(err))
+}
 
-    if(res.ok){
-        return console.log(res.status)
-    }
+async function postSignup(){
+    const email = document.getElementById('usernameSignup').value;
+    const password = document.getElementById('senhaSignup').value;
+    await fetch('/auth/signup', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            email: email,
+            password: password
+        }),
+    }).then(res => {
+        if(res.ok) {
+            console.log(res.text())
+            login(email)
+        }
+    }).catch(err => console.log(err))
 }
 
 async function delLogout(){
@@ -62,11 +72,12 @@ async function delLogout(){
 async function getToken(){
     const res = await fetch(url + '/auth/token', {
         method: 'GET',
+    }).then(res => {
+        if(res.ok) {
+            console.log(res.text())
+            login('')
+        }
     }).catch(err => console.log(err))
-
-    if(res.ok) {
-        login('')
-    }
 }
 
 window.onload = getToken();

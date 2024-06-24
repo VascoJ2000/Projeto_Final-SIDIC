@@ -1,66 +1,98 @@
 .loggedIn {
-    display: none;
-  }
+  display: none;
+}
+
+.navbar {
+  background-color: transparent;
+  box-shadow: 0px 1px 20px #eaeaea;
+  transition: background-color 1s ease 0s;
+}
+
+.navbar.solid {
+  transition: background-color 1s ease 0s;
+}
+
+.carousel-inner {
+  height: 200px;
+}
+
+.carousel-item {
+  position: relative;
+  height: 100%;
+}
+
+.carousel-item img {
+  width: 100%;
+}
+
+footer p {
+  font-size: 0.8em;
+}
+
+footer a, footer p {
+  color: gray;
+}
+
+section {
+  display: none;
+}
   
-  .navbar {
-    background-color: transparent;
-    box-shadow: 0px 1px 20px #eaeaea;
-    transition: background-color 1s ease 0s;
-  }
+.card {
+  margin: 0.5em;
+  width: 200px;
+  height: 450px;
+  flex-shrink: 0;
+}
   
-  .navbar.solid {
-    transition: background-color 1s ease 0s;
-  }
+.card-img-top {
+  width: 200px;
+  height: 270px;
+}
   
-  .carousel-inner {
-    height: 200px;
-  }
-  
-  .carousel-item {
+.card-wrapper {
+  width: 100%;
+}
+
+.chat-history {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding: 10px;
+}
+
+.message {
     position: relative;
-    height: 100%;
-  }
-  
-  .carousel-item img {
-    width: 100%;
-  }
-  
-  footer p {
-    font-size: 0.8em;
-  }
-  
-  footer a, footer p {
-    color: gray;
-  }
-  
-  section {
+    padding: 10px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    line-height: 1.5;
+    font-size: 16px;
+}
+
+.outgoing {
+    margin-left: auto;
+    background-color: green;
+    color: white;
+    max-width: 70%;
+}
+
+.incoming {
+    background-color: #0b93f6;
+    color: white;
+    max-width: 70%;
+}
+
+#loading {
     display: none;
-  }
-  
-  .card {
-    margin: 0.5em;
-    width: 200px;
-    height: 450px;
-    flex-shrink: 0;
-  }
-  
-  .card-img-top {
-    width: 200px;
-    height: 270px;
-  }
-  
-  .card-wrapper {
-    width: 100%;
+}
+
+@media screen and (min-width: 768px) {
+  .carousel-inner {
+    height: 500px;
   }
 
-  @media screen and (min-width: 768px) {
-    .carousel-inner {
-      height: 500px;
-    }
-
-    .carousel-item .imgMid {
-      position: absolute;
-      top: 50%;
-      transform: translateY(-50%);
-    }
+  .carousel-item .imgMid {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
   }
+}
