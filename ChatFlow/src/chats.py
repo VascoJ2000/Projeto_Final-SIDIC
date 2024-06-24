@@ -1,4 +1,3 @@
-from ChatFlow import db
 from ChatFlow.middleware.auth import auth_access
 from flask import Response, request, g, Blueprint
 from ChatFlow.db import db_cli
@@ -17,7 +16,11 @@ def get_chats():
         user_id = g.decoded_jwt['user_id']
         chat_id_arr = []
         for chat in db_cli['Chats'].find({'user_id': user_id}):
-            chat_id_arr.append(str(chat['_id']))
+            chat_details = {
+                'chat_id': str(chat['_id']),
+                'name': chat['name']
+            }
+            chat_id_arr.append(chat_details)
         if not chat_id_arr:
             raise Exception("No chats found!")
 
@@ -71,6 +74,7 @@ def new_message():
         else:
             query = {
                 'user_id': user_id,
+                'name': message[0:15] + "...",
                 'messages': []
             }
             chat_id = db_cli['Chats'].insert_one(query).inserted_id

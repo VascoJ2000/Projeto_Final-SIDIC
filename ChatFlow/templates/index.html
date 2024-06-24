@@ -15,130 +15,211 @@
     <link rel="stylesheet" href="../static/css/index.css"/>
   </head>
   <body>
-    <!-- Nav Bar -->
-    <nav class="navbar navbar-expand-lg navbar-light fixed-top" id="navbar">
-      <div class="container-fluid">
-        <a class="navbar-brand" href="#" onclick="showSection('home')">ChatFlow</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-
-            <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" href="#" id="navbarMoviesDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                Sobre nós
-              </a>
-              <ul class="dropdown-menu dropdown-menu-light" aria-labelledby="navbarMoviesDropdown">
-                <li><a class="dropdown-item" href="#Linguagens" onclick="showSection('home')">Linguagens usadas</a></li>
-                <li><a class="dropdown-item" href="#Equipa" onclick="showSection('home')">Equipa</a></li>
-                <li><a class="dropdown-item" href="#Objetivos" onclick="showSection('home')">Objetivos</a></li>
-                <li><a class="dropdown-item" href="#Manual" onclick="showSection('home')">Manual de utilizador</a></li>
-              </ul>
-            </li>
-
-            <li class="nav-item">
-              <a class="nav-link loggedIn" href="#" onclick="getUser();showSection('user')">User</a>
-            </li>
-          </ul>
-
-          <form class="loggedOut">
-            <button class="btn btn-primary me-2" id="btnNavLogin" type="button">Login</button>
-            <button class="btn btn-secondary me-2" id="btnNavSignup" type="button">Signup</button>
-          </form>
-
-          <form class="loggedIn">
-            <span class="navbar-text me-2" id="userLogged">
-              user@email.com
-            </span>
-            <button class="btn btn-warning me-2" id="btnNavlogout" type="button" onclick="delLogout()">Logout</button>
-          </form>
-
-        </div>
-      </div>
-    </nav>
-    
     <section id="home">
-      <div id="carouselExampleFade" class="carousel slide carousel-fade" data-bs-ride="carousel">
-        <div class="carousel-inner">
-          <div class="carousel-item active">
-            <img src="../static/img/001.jpg" class="d-block w-100" alt="...">
+      <div class="d-flex flex-column min-vh-100">
+        <!-- Nav Bar -->
+        <nav class="navbar navbar-expand-lg navbar-light fixed-top" id="navbar">
+          <div class="container-fluid">
+            <a class="navbar-brand" href="#" onclick="showSection('home')">ChatFlow</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+              <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+
+                <li class="nav-item dropdown">
+                  <a class="nav-link dropdown-toggle" href="#" id="navbarMoviesDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    Sobre nós
+                  </a>
+                  <ul class="dropdown-menu dropdown-menu-light" aria-labelledby="navbarMoviesDropdown">
+                    <li><a class="dropdown-item" href="#Linguagens" onclick="showSection('home')">Linguagens usadas</a></li>
+                    <li><a class="dropdown-item" href="#Equipa" onclick="showSection('home')">Equipa</a></li>
+                    <li><a class="dropdown-item" href="#Objetivos" onclick="showSection('home')">Objetivos</a></li>
+                    <li><a class="dropdown-item" href="#Manual" onclick="showSection('home')">Manual de utilizador</a></li>
+                  </ul>
+                </li>
+
+                <li class="nav-item">
+                  <a class="nav-link loggedIn" href="#" onclick="getUser();showSection('user')">User</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link loggedIn" href="#" onclick="showSection('workflow')">Workflow</a>
+                </li>
+              </ul>
+
+              <form class="loggedOut">
+                <button class="btn btn-primary me-2" id="btnNavLogin" type="button">Login</button>
+                <button class="btn btn-secondary me-2" id="btnNavSignup" type="button">Signup</button>
+              </form>
+
+              <form class="loggedIn">
+                <span class="navbar-text me-2" id="userLogged">
+                  user@email.com
+                </span>
+                <button class="btn btn-warning me-2" id="btnNavlogout" type="button" onclick="delLogout()">Logout</button>
+              </form>
+
+            </div>
           </div>
-          <div class="carousel-item">
-            <img src="../static/img/002.jpg" class="d-block w-100" alt="...">
+        </nav>
+
+        <div id="carouselExampleFade" class="carousel slide carousel-fade" data-bs-ride="carousel">
+          <div class="carousel-inner">
+            <div class="carousel-item active">
+              <img src="../static/img/001.jpg" class="d-block w-100" alt="...">
+            </div>
+            <div class="carousel-item">
+              <img src="../static/img/002.jpg" class="d-block w-100" alt="...">
+            </div>
+            <div class="carousel-item">
+              <img src="../static/img/003.jpg" class="d-block w-100" alt="...">
+            </div>
+            <div class="carousel-item">
+              <img src="../static/img/004.jpg" class="d-block w-100" alt="...">
+            </div>
           </div>
-          <div class="carousel-item">
-            <img src="../static/img/003.jpg" class="d-block w-100" alt="...">
-          </div>
-          <div class="carousel-item">
-            <img src="../static/img/004.jpg" class="d-block w-100" alt="...">
-          </div>
+          <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleFade" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+          </button>
+          <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleFade" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+          </button>
         </div>
-        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleFade" data-bs-slide="prev">
-          <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-          <span class="visually-hidden">Previous</span>
-        </button>
-        <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleFade" data-bs-slide="next">
-          <span class="carousel-control-next-icon" aria-hidden="true"></span>
-          <span class="visually-hidden">Next</span>
-        </button>
-      </div>
-      <div class="container-xxl my-md-4">
-        <main class="">
-          <div id="Linguagens" class="border border-1 container-fluid p-5">
-            <h2>Linguagens usadas</h2>
-            <p class="m-0">No coração da nossa presença online está a nossa abordagem técnica meticulosa e eficaz. No desenvolvimento do nosso website, concentramo-nos em utilizar apenas python como ligua de programação, que não só oferece uma base sólida para a experiência do utilizador, mas também garante a manutenção e expansão futura com facilidade.</p><br>
-            <p class="m-0">Para tal, precisamos de uma tecnologia inovaroda que nos permita traduzir o código Python para uma linguagem compatível com a web, como o PyScript. Essa tecnologia atua como uma ponte entre o browser e uma linguagem de programação versátil e poderosa.</p><br>
-            <p class="m-0">O PyScript permite-nos incorporar funcionalidades avançadas, processar dados em tempo real e criar uma experiência personalizada para cada utilizador. Desde formulários de contacto até à personalização do conteúdo com base nas preferências do utilizador, o PyScript é uma ferramenta versátil que impulsiona a interatividade do nosso website.</p><br>
-            <p>Através da combinação cuidadosa de HTML, Python e PyScript, criamos um website que não só comunica eficazmente a nossa mensagem, mas também proporciona uma experiência envolvente e intuitiva para os nossos visitantes. Estamos comprometidos em manter esta abordagem de desenvolvimento de alta qualidade à medida que continuamos a crescer e a evoluir online.</p>
-          </div>
+        <div class="container-xxl my-md-4">
+          <main class="">
+            <div id="Linguagens" class="border border-1 container-fluid p-5">
+              <h2>Linguagens usadas</h2>
+              <p class="m-0">No coração da nossa presença online está a nossa abordagem técnica meticulosa e eficaz. No desenvolvimento do nosso website, concentramo-nos em utilizar apenas python como ligua de programação, que não só oferece uma base sólida para a experiência do utilizador, mas também garante a manutenção e expansão futura com facilidade.</p><br>
+              <p class="m-0">Para tal, precisamos de uma tecnologia inovaroda que nos permita traduzir o código Python para uma linguagem compatível com a web, como o PyScript. Essa tecnologia atua como uma ponte entre o browser e uma linguagem de programação versátil e poderosa.</p><br>
+              <p class="m-0">O PyScript permite-nos incorporar funcionalidades avançadas, processar dados em tempo real e criar uma experiência personalizada para cada utilizador. Desde formulários de contacto até à personalização do conteúdo com base nas preferências do utilizador, o PyScript é uma ferramenta versátil que impulsiona a interatividade do nosso website.</p><br>
+              <p>Através da combinação cuidadosa de HTML, Python e PyScript, criamos um website que não só comunica eficazmente a nossa mensagem, mas também proporciona uma experiência envolvente e intuitiva para os nossos visitantes. Estamos comprometidos em manter esta abordagem de desenvolvimento de alta qualidade à medida que continuamos a crescer e a evoluir online.</p>
+            </div>
 
-          <div id="Equipa" class="border border-1 container-fluid p-5">
-            <h2>Equipa</h2>
-            <p class="m-0">Na vanguarda do desenvolvimento do nosso website está uma equipa dinâmica e talentosa de estudantes de Licenciatura em Engenharia Informática na prestigiada Universidade Autónoma de Lisboa. Cada membro traz consigo uma paixão pela tecnologia e um compromisso inabalável com a excelência técnica.</p><br>
-            <p class="m-0">Diogo Botas, Ricardo Biscaia, Ricardo Duarte e Vasco João formam o núcleo desta equipa apaixonada. Juntos, combinam uma vasta gama de habilidades técnicas, desde a programação até ao design de interfaces, e trazem uma energia contagiante para cada projeto que abordam.</p><br>
-            <p>Enquanto estudantes dedicados, eles não apenas aplicam os conhecimentos adquiridos em sala de aula, mas também estão constantemente buscando novas maneiras de inovar e elevar o padrão em tudo o que fazem. Sua dedicação ao aprendizado contínuo e ao crescimento profissional é evidente em cada linha de código e cada pixel do nosso website.</p>
-          </div>
+            <div id="Equipa" class="border border-1 container-fluid p-5">
+              <h2>Equipa</h2>
+              <p class="m-0">Na vanguarda do desenvolvimento do nosso website está uma equipa dinâmica e talentosa de estudantes de Licenciatura em Engenharia Informática na prestigiada Universidade Autónoma de Lisboa. Cada membro traz consigo uma paixão pela tecnologia e um compromisso inabalável com a excelência técnica.</p><br>
+              <p class="m-0">Diogo Botas, Ricardo Biscaia, Ricardo Duarte e Vasco João formam o núcleo desta equipa apaixonada. Juntos, combinam uma vasta gama de habilidades técnicas, desde a programação até ao design de interfaces, e trazem uma energia contagiante para cada projeto que abordam.</p><br>
+              <p>Enquanto estudantes dedicados, eles não apenas aplicam os conhecimentos adquiridos em sala de aula, mas também estão constantemente buscando novas maneiras de inovar e elevar o padrão em tudo o que fazem. Sua dedicação ao aprendizado contínuo e ao crescimento profissional é evidente em cada linha de código e cada pixel do nosso website.</p>
+            </div>
 
-          <div id="Objetivos" class="border border-1 container-fluid p-5">
-            <h2>Objetivos</h2>
-            <p class="m-0">A nossa missão é de simplificar e otimizar os processos empresariais, e é por isso que estamos entusiasmados em apresentar o ChatFlow. Este revolucionário  sitema de  workflow é muito mais do que uma simples ferramenta de gestão de ficheiros e organização; é a chave para uma gestão de documentos empresariais sem papel, mais eficiente e intuitiva.</p><br>
-            <p class="m-0">O objetivo fundamental do ChatFlow é de optimizar trabalhos de escritório, reduzindo a utilização de papel e facilitando a consulta de ficheiros,  oferecendo uma solução acessível e fácil de usar para aceder a documentos essenciais. Ao integrar-se diretamente com os sistemas e bases de dados das empresas, o ChatFlow capacita os utilizadores a acederem e criarem a uma vasta gama de documentos, desde relatórios de eventos até folhas de salários, através de uma simples conversa.</p><br>
-            <p class="m-0">Imagine apenas conversar com o ChatBot como faria com um colega de trabalho, e em segundos ter acesso aos documentos de que precisa. Não mais folhear pilhas de papel ou perder tempo a procurar em pastas digitais desorganizadas. Com o ChatFlow, a informação está ao seu alcance, sempre que precisar.</p><br>
-            <p class="m-0">Além de proporcionar uma gestão de documentos mais eficiente, o ChatFlow também oferece uma camada adicional de segurança e controle de acesso. Os utilizadores podem ser autorizados apenas a aceder a determinados documentos, garantindo a confidencialidade e a conformidade com as políticas internas da empresa.</p><br>
-            <p>Com o ChatFlow, estamos a reinventar a forma como as empresas lidam com a papelada e ficheiros digitais, tornando os processos mais ágeis, inteligentes e sustentáveis. Estamos ansiosos para ver como esta inovação transformará a sua empresa e aguardamos com expectativa o seu feedback à medida que avançamos juntos nesta jornada rumo a um futuro empresarial mais eficiente e ambientalmente consciente.</p>
-          </div>
+            <div id="Objetivos" class="border border-1 container-fluid p-5">
+              <h2>Objetivos</h2>
+              <p class="m-0">A nossa missão é de simplificar e otimizar os processos empresariais, e é por isso que estamos entusiasmados em apresentar o ChatFlow. Este revolucionário  sitema de  workflow é muito mais do que uma simples ferramenta de gestão de ficheiros e organização; é a chave para uma gestão de documentos empresariais sem papel, mais eficiente e intuitiva.</p><br>
+              <p class="m-0">O objetivo fundamental do ChatFlow é de optimizar trabalhos de escritório, reduzindo a utilização de papel e facilitando a consulta de ficheiros,  oferecendo uma solução acessível e fácil de usar para aceder a documentos essenciais. Ao integrar-se diretamente com os sistemas e bases de dados das empresas, o ChatFlow capacita os utilizadores a acederem e criarem a uma vasta gama de documentos, desde relatórios de eventos até folhas de salários, através de uma simples conversa.</p><br>
+              <p class="m-0">Imagine apenas conversar com o ChatBot como faria com um colega de trabalho, e em segundos ter acesso aos documentos de que precisa. Não mais folhear pilhas de papel ou perder tempo a procurar em pastas digitais desorganizadas. Com o ChatFlow, a informação está ao seu alcance, sempre que precisar.</p><br>
+              <p class="m-0">Além de proporcionar uma gestão de documentos mais eficiente, o ChatFlow também oferece uma camada adicional de segurança e controle de acesso. Os utilizadores podem ser autorizados apenas a aceder a determinados documentos, garantindo a confidencialidade e a conformidade com as políticas internas da empresa.</p><br>
+              <p>Com o ChatFlow, estamos a reinventar a forma como as empresas lidam com a papelada e ficheiros digitais, tornando os processos mais ágeis, inteligentes e sustentáveis. Estamos ansiosos para ver como esta inovação transformará a sua empresa e aguardamos com expectativa o seu feedback à medida que avançamos juntos nesta jornada rumo a um futuro empresarial mais eficiente e ambientalmente consciente.</p>
+            </div>
 
-          <div id="Manual" class="border border-1 container-fluid p-5">
-            <h2>Manual de utilizador</h2>
-            <p>daskhjbgdaw</p>
-          </div>
-        </main>
+            <div id="Manual" class="border border-1 container-fluid p-5">
+              <h2>Manual de utilizador</h2>
+              <p>daskhjbgdaw</p>
+            </div>
+          </main>
+        </div>
+
+        <footer class="container-fluid text-center p-4 bg-dark mt-auto">
+          <div class="row">
+            <div class="col-sm-4">
+              <h6 class="text-secondary">ChatFlow</h6>
+              <hr>
+              <p>
+                <a href="#">ChatFlow</a><br>
+                <a href="#" onclick="showSection('home')">Sobre nós</a><br>
+                <a class="loggedIn" href="#" onclick="showSection('workflow')">Workspace</a>
+              </p>
+            </div>
+
+            <div class="col-sm-4">
+              <h6 class="text-secondary">Sobre nós</h6>
+              <hr>
+              <p>
+                <a href="#Linguagens" onclick="showSection('home')">Linguagens usadas</a><br>
+                <a href="#Equipa" onclick="showSection('home')">Equipa</a><br>
+                <a href="#Objetivos" onclick="showSection('home')">Objetivos</a><br>
+                <a href="#Manual" onclick="showSection('home')">Manual de utilizador</a>
+              </p>
+            </div>
+
+            <div class="col-sm-4">
+              <h6 class="text-secondary">Contacts</h6>
+              <hr>
+              <p>
+                <i class="fas fa-envelope"></i> 30005819@students.ual.pt<br>
+                <i class="fas fa-envelope"></i> 30009700@students.ual.pt<br>
+                <i class="fas fa-envelope"></i> 30009680@students.ual.pt<br>
+                <i class="fas fa-envelope"></i> 30008938@students.ual.pt
+              </p>
+            </div>
+          </div><br>
+
+          <h4 class="text-secondary"><i>@ 2024 Vasco J. Diogo B. Ricardo D. Ricardo B.</i></h4>
+        </footer>
       </div>
     </section>
   
-    <section id="ChatBot" class="container-fluid">
-      <h3 id="moviesType">ChatBot</h3>
-      <div class="container-xxl my-md-4">
-        <aside class=""></aside>
-        <main class=""></main>
-      </div>
-      <div class="navbar navbar-expand-lg d-flex justify-content-end" id="pageNav">
-        <button type="button" class="btn btn-primary me-2" id="btnPage1">Page 1</button>
-        <button type="button" class="btn btn-secondary me-2" id="btnPage2" onclick="">Page 2</button>
-      </div>
-    </section>
-  
-    <section id="Worklfow" class="container-fluid">
-      <h2>Worklfow</h2>
-      <div class="container-xxl my-md-4">
-        <aside id="Workspaces" class=""></aside>
-        <main class="">
-          <table id="Workspace" class="table table-bordered mx-2">
-            <thead></thead>
-            <tbody></tbody>
-          </table>
-        </main>
+    <section id="workflow">
+      <div class="container-fluid">
+        <div class="row">
+          <aside class="flex-shrink-0 p-3 text-bg-dark" style="width: 280px;">
+            <a href="/" class="d-flex align-items-center pb-3 mb-3 link-body-emphasis text-white border-bottom">
+              <span class="fs-5 fw-semibold">Workspace</span>
+            </a>
+            <ul class="list-unstyled ps-0">
+              <li class="mb-1">
+                <button class="btn d-inline-flex align-items-center text-white rounded border-0">
+                  Workspace
+                </button>
+
+              </li>
+              <li class="mb-1">
+                <button class="btn d-inline-flex align-items-center text-white rounded border-0" onclick="selectChat(null)">
+                  New Chat with AI
+                </button>
+              </li>
+              <li class="border-top my-3"></li>
+              <li>
+                Chats
+                <ul id="asideChat" class="list-unstyled fw-normal pb-1 small">
+                  <!-- Chats will be listed here -->
+                </ul>
+              </li>
+              <li class="border-top my-3"></li>
+              <li class="mb-1">
+                <button class="btn btn-toggle d-inline-flex align-items-center text-white rounded border-0 collapsed" data-bs-toggle="collapse" data-bs-target="#account-collapse" aria-expanded="false">
+                  Account
+                </button>
+                <div class="collapse" id="account-collapse" style="">
+                  <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+                    <li><a href="#" class="link-body-emphasis d-inline-flex text-white rounded">Profile</a></li>
+                    <li><a href="#" class="link-body-emphasis d-inline-flex text-white rounded" onclick="delLogout()">Sign out</a></li>
+                  </ul>
+                </div>
+              </li>
+            </ul>
+          </aside>
+
+          <main id="Workspace" class="col bg-secondary mw-100">
+            <div id="space">
+              <table id="Worktable" class="table table-bordered mx-2">
+                <thead></thead>
+                <tbody></tbody>
+              </table>
+            </div>
+            <div id="chat-current" class="d-flex flex-column vh-100">
+              <div id="loading">
+                Loading chat...
+              </div>
+              <div id="chat-history" class="overflow-y-auto bottom-0 chat-history"></div>
+              <div class="container-fluid text-center p-4 mt-auto d-inline-flex chat-controls">
+                <input type="text" class="form-control" placeholder="Type your message here..." id="message" name="message">
+                <button type="button" class="btn btn-primary" onclick="sendMessage()">Send</button>
+              </div>
+            </div>
+          </main>
+        </div>
       </div>
     </section>
   
@@ -220,51 +301,12 @@
       </div>
     </div>
 
-    <footer class="container-fluid text-center p-5 bg-dark">
-      <div class="row">
-        <div class="col-sm-4">
-          <h6 class="text-secondary">ChatFlow</h6>
-          <hr>
-          <p>
-            <a href="#">ChatFlow</a><br>
-            <a href="#" onclick="showSection('home')">Sobre nós</a><br>
-            <a class="loggedIn" href="#" onclick="showSection('ChatBot')">ChatBot</a><br>
-            <a class="loggedIn" href="#" onclick="showSection('Worklfow')">Upload Ficheiros</a>
-          </p>
-        </div>
-
-        <div class="col-sm-4">
-          <h6 class="text-secondary">Sobre nós</h6>
-          <hr>
-          <p>
-            <a href="#Linguagens" onclick="showSection('home')">Linguagens usadas</a><br>
-            <a href="#Equipa" onclick="showSection('home')">Equipa</a><br>
-            <a href="#Objetivos" onclick="showSection('home')">Objetivos</a><br>
-            <a href="#Manual" onclick="showSection('home')">Manual de utilizador</a>
-          </p>
-        </div>
-
-        <div class="col-sm-4">
-          <h6 class="text-secondary">Contacts</h6>
-          <hr>
-          <p>
-            <i class="fas fa-envelope"></i> 30005819@students.ual.pt<br>
-            <i class="fas fa-envelope"></i> 30009700@students.ual.pt<br>
-            <i class="fas fa-envelope"></i> 30009680@students.ual.pt<br>
-            <i class="fas fa-envelope"></i> 30008938@students.ual.pt
-          </p>
-        </div>
-
-      </div><br>
-      
-      <h4 class="text-secondary"><i>@ 2024 Vasco J. Diogo B. Ricardo D. Ricardo B.</i></h4>
-    </footer>
-
     <!-- BootStrap 5.3.3 -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 
     <!-- Local Scripts -->
     <script src="../static/js/index.js"></script>
+    <script src="../static/js/chats.js"></script>
     <script src="../static/js/auth.js"></script>
   </body>
 </html>
