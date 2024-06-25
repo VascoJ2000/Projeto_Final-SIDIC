@@ -77,7 +77,7 @@ def create_folder():
         }
         folder_id = db_cli['Folders'].insert_one(query).inserted_id
 
-        if not db_cli['Folders'].update_one({'_id': root_folder}, {'$push': {'folders': folder_id}}).modified_count:
+        if not db_cli['Folders'].update_one({'_id': root_folder}, {'$push': {'folders': {'folder_id': folder_id, 'name': folder_name}}}).modified_count:
             error_status = 404
             raise Exception('Root folder not found')
 

@@ -43,7 +43,7 @@ def post_file(folder):
 
         file_id = fs.put(file, filename=file.filename, root_folder=folder, workspace_id=workspace_id)
 
-        if not db_cli['Folders'].update_one({'_id': folder}, {'$push': {'files': file_id}}).modified_count:
+        if not db_cli['Folders'].update_one({'_id': folder}, {'$push': {'files': {'file_id': file_id, 'name': file.filename}}}).modified_count:
             error_status = 404
             raise Exception('Root folder not found')
 
