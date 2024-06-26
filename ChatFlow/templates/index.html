@@ -349,14 +349,14 @@
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title">
-              Give the workspace a name
+              Give the Folder a name
             </h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="btnFolderClose"></button>
           </div>
           <div class="modal-body">
             <div class="mb-3">
-              <label class="form-label">Workspace Name</label>
-              <input type="text" class="form-control" id="folderName" name="folderName" placeholder="New Workspace"/>
+              <label class="form-label">Folder Name</label>
+              <input type="text" class="form-control" id="folderName" name="folderName" placeholder="New Folder"/>
               <p id="folderError"></p>
             </div>
             <div class="modal-footer d-block">
@@ -379,21 +379,21 @@
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title">
-              Give the workspace a name
+              Add the File to the workspace
             </h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="btnFileClose"></button>
           </div>
           <div class="modal-body">
             <div class="mb-3">
-              <label class="form-label">Workspace Name</label>
-              <input type="text" class="form-control" id="fileName" name="fileName" placeholder="New Workspace"/>
+              <label class="form-label">File</label>
+              <input type="file" class="form-control" id="fileInput" name="fileInput" placeholder="Place You file here"/>
               <p id="FileError"></p>
             </div>
             <div class="modal-footer d-block">
               <button class="btn btn-warning float-end" data-bs-dismiss="modal">
                 Cancelar
               </button>
-              <button class="btn btn-success float-end" id="btnSubmitFile" onclick="addFile()" data-bs-dismiss="modal">
+              <button class="btn btn-success float-end" id="btnSubmitFile" onclick="uploadFile()" data-bs-dismiss="modal">
                 Create
               </button>
             </div>

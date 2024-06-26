@@ -47,7 +47,7 @@ def post_file(folder):
             error_status = 404
             raise Exception('Root folder not found')
 
-        res_json = json.dumps({'file_id': str(file_id)}, ensure_ascii=False).encode('utf8')
+        res_json = json.dumps({'file_id': str(file_id), 'name': file.filename}, ensure_ascii=False).encode('utf8')
     except Exception as e:
         return Response(str(e), status=error_status)
     return Response(res_json, status=200, mimetype='application/json charset=utf-8')
