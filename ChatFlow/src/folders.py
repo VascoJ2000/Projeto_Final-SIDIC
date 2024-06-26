@@ -29,7 +29,6 @@ def get_folder(folder):
 
         folder_folders = []
         for child in folder_content['folders']:
-            print(child)
             folder_folders.append({'folder_id': str(child['folder_id']), 'name': child['name']})
 
         folder_files = []

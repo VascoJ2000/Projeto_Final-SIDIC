@@ -43,7 +43,11 @@ function loadFolder(payload){
     if(payload.is_root){
         worktable.innerHTML = `<thead>
                                    <tr>
-                                       <th><div>${payload.folder_name} <button onclick="bsModalFolder.show()">New Folder</button></div></th>
+                                       <th><div>
+                                            ${payload.folder_name} 
+                                            <button onclick="bsModalFolder.show()">New Folder</button>
+                                            <button onclick="bsModalFiles.show()">Add Document</button>
+                                       </div></th>
                                        <th></th>
                                        <th></th>
                                    </tr>
@@ -51,7 +55,12 @@ function loadFolder(payload){
     }else{
         worktable.innerHTML = `<thead>
                                    <tr>
-                                       <th><div><button onclick="getFolder('${payload.root_folder}')">^</button> ${payload.folder_name} <button onclick="bsModalFolder.show()">New Folder</button></div></th>
+                                       <th><div>
+                                            <button onclick="getFolder('${payload.root_folder}')">^</button> 
+                                            ${payload.folder_name} 
+                                            <button onclick="bsModalFolder.show()">New Folder</button>
+                                            <button onclick="bsModalFiles.show()">Add Document</button>
+                                       </div></th>
                                        <th></th>
                                        <th></th>
                                    </tr>
@@ -72,10 +81,14 @@ function loadFolder(payload){
         tbody.innerHTML = `
                             <tr>
                                 <td>${payload.files[i].name}</td>
-                                <td><button onclick="getFile('${payload.file[i].folder_id}')">GET</button></td>
-                                <td><button onclick="deleteFile('${payload.file[i].folder_id}')">DELETE</button></td>
+                                <td><button onclick="getFile('${payload.file[i].file_id}')">GET</button></td>
+                                <td><button onclick="deleteFile('${payload.file[i].file_id}')">DELETE</button></td>
                             </tr>
         `
     }
     worktable.appendChild(tbody)
+}
+
+function addFolderToFolder(){
+
 }
