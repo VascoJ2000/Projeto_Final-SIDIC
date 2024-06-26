@@ -326,7 +326,7 @@
           <div class="modal-body">
             <div class="mb-3">
               <label class="form-label">Workspace Name</label>
-              <input type="text" class="form-control" id="workspaceName" name="usernameLogin" placeholder="New Workspace"/>
+              <input type="text" class="form-control" id="workspaceName" name="workspaceName" placeholder="New Workspace"/>
               <p id="workspaceError"></p>
             </div>
             <div class="modal-footer d-block">
@@ -334,6 +334,66 @@
                 Cancelar
               </button>
               <button class="btn btn-success float-end" id="btnSubmitWorkspace" onclick="postWorkspace()" data-bs-dismiss="modal">
+                Create
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal para criar pastas -->
+    <!-- se retirar o data-bs-backdrop, o modal desaparece ao clicar no fundo da página -->
+    <div class="modal fade" id="modalFolder" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" data-bs-backdrop="static">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">
+              Give the workspace a name
+            </h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="btnFolderClose"></button>
+          </div>
+          <div class="modal-body">
+            <div class="mb-3">
+              <label class="form-label">Workspace Name</label>
+              <input type="text" class="form-control" id="folderName" name="folderName" placeholder="New Workspace"/>
+              <p id="folderError"></p>
+            </div>
+            <div class="modal-footer d-block">
+              <button class="btn btn-warning float-end" data-bs-dismiss="modal">
+                Cancelar
+              </button>
+              <button class="btn btn-success float-end" id="btnSubmitFolder" onclick="addFolder()" data-bs-dismiss="modal">
+                Create
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal para adicionar ficheiros -->
+    <!-- se retirar o data-bs-backdrop, o modal desaparece ao clicar no fundo da página -->
+    <div class="modal fade" id="modalFile" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" data-bs-backdrop="static">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">
+              Give the workspace a name
+            </h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="btnFileClose"></button>
+          </div>
+          <div class="modal-body">
+            <div class="mb-3">
+              <label class="form-label">Workspace Name</label>
+              <input type="text" class="form-control" id="fileName" name="fileName" placeholder="New Workspace"/>
+              <p id="FileError"></p>
+            </div>
+            <div class="modal-footer d-block">
+              <button class="btn btn-warning float-end" data-bs-dismiss="modal">
+                Cancelar
+              </button>
+              <button class="btn btn-success float-end" id="btnSubmitFile" onclick="addFile()" data-bs-dismiss="modal">
                 Create
               </button>
             </div>
