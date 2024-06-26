@@ -8,6 +8,8 @@ const chatAI = document.getElementById('chat')
 const asideWorkspace = document.getElementById('asideWorkspace')
 const worktable = document.getElementById('Worktable')
 
+let currentWorkspace = null
+
 btnWorkspace.addEventListener('click', () => {
     bsModalWorkspace.show()
 });

@@ -29,13 +29,15 @@ def get_folder(folder):
 
         folder_folders = []
         for child in folder_content['folders']:
-            folder_folders.append(str(child))
+            print(child)
+            folder_folders.append({'folder_id': str(child['folder_id']), 'name': child['name']})
 
         folder_files = []
         for child in folder_content['files']:
-            folder_files.append(str(child))
+            folder_files.append({'file_id': str(child['file_id']), 'name': child['name']})
 
         res_dict = {
+            'workspace_id': str(folder_content['workspace_id']),
             'folder_id': str(folder_content['_id']),
             'folder_name': folder_content['name'],
             'root_folder': root_folder,
