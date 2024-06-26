@@ -33,7 +33,7 @@ function addFolder(){
         if(res.ok) {
             return res.json()
         }
-    }).then(data => loadFolder(data))
+    }).then(data => addFolderToFolder(data))
     .catch(err => console.log(err))
 }
 
@@ -66,9 +66,9 @@ function loadFolder(payload){
                                    </tr>
                                </thead>`
     }
-    const tbody = document.createElement('tbody')
-    console.log(payload.folders)
+
     for(let i = 0; i<payload.folders.length; i++){
+        const tbody = document.createElement('tbody')
         tbody.innerHTML = `
                             <tr>
                                 <td onclick="getFolder('${payload.folders[i].folder_id}')">&#128193; ${payload.folders[i].name}</td>
@@ -76,19 +76,29 @@ function loadFolder(payload){
                                 <td></td>
                             </tr>
         `
+        worktable.appendChild(tbody)
     }
     for(let i = 0; i<payload.files.length; i++){
+        const tbody = document.createElement('tbody')
         tbody.innerHTML = `
                             <tr>
                                 <td>${payload.files[i].name}</td>
-                                <td><button onclick="getFile('${payload.file[i].file_id}')">GET</button></td>
-                                <td><button onclick="deleteFile('${payload.file[i].file_id}')">DELETE</button></td>
+                                <td><button onclick="getFile('${payload.files[i].file_id}')">GET</button></td>
+                                <td><button onclick="deleteFile('${payload.files[i].file_id}')">DELETE</button></td>
                             </tr>
         `
+        worktable.appendChild(tbody)
     }
-    worktable.appendChild(tbody)
 }
 
-function addFolderToFolder(){
-
+function addFolderToFolder(folder){
+    const tbody = document.createElement('tbody')
+    tbody.innerHTML = `
+                        <tr>
+                            <td onclick="getFolder('${folder.folder_id}')">&#128193; ${folder.name}</td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+    `
+    worktable.appendChild(tbody)
 }
