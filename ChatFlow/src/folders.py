@@ -133,7 +133,7 @@ def delete_folder(folder):
             error_status = 500
             raise Exception('Folder could not be deleted')
 
-        if not db_cli['Folders'].update_one({'_id': folder_content['root_folder']}, {'$pull': {'folders': folder_id}}).modified_count:
+        if not db_cli['Folders'].update_one({'_id': folder_content['root_folder']}, {'$pull': {'folders': {'folder_id': folder_id}}}).modified_count:
             error_status = 500
             raise Exception('Folder could not be deleted properly!')
     except Exception as e:

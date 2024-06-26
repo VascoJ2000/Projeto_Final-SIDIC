@@ -1,5 +1,5 @@
 from ChatFlow.middleware.auth import auth_access
-from flask import Response, request, g, Blueprint
+from flask import Response, request, g, Blueprint, send_file
 from ChatFlow.db import db_cli, fs
 from bson import ObjectId, json_util
 import json
@@ -24,7 +24,7 @@ def get_file(file):
             raise Exception('User not authorized to access this file')
     except Exception as e:
         return Response(str(e), status=error_status)
-    return Response(file_content.read(), status=200, mimetype='application/octet-stream')
+    return send_file(file_content, as_attachment=True, mimetype='application/octet-stream', download_name=file_content.filename)
 
 
 @files_bp.route('/file/<folder>', methods=['POST'])
@@ -69,7 +69,7 @@ def delete_file(file):
             raise Exception('User not authorized to access this workspace')
 
         fs.delete(file)
-        db_cli['Folders'].update_one({'_id': folder_id}, {'$pull': {'files': file}})
+        db_cli['Folders'].update_one({'_id': folder_id}, {'$pull': {'files': {'file_id': file}}})
     except Exception as e:
         return Response(str(e), status=error_status)
     return Response(None, status=204)
