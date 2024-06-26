@@ -37,6 +37,17 @@ function addFolder(){
     .catch(err => console.log(err))
 }
 
+function deleteFolder(folder){
+    fetch(url + `/folder/${folder}`, {
+        method: 'DELETE',
+    }).then(res => {
+        if(res.status === 204) {
+            return res.text()
+        }
+    }).then(data => getFolder(currentFolder))
+    .catch(err => console.log(err))
+}
+
 function loadFolder(payload){
     currentWorkspace = payload.workspace_id
     currentFolder = payload.folder_id
@@ -48,6 +59,7 @@ function loadFolder(payload){
                                             <button onclick="bsModalFolder.show()">New Folder</button>
                                             <button onclick="bsModalFiles.show()">Add Document</button>
                                        </div></th>
+                                       <th></th>
                                        <th></th>
                                        <th></th>
                                    </tr>
@@ -63,6 +75,7 @@ function loadFolder(payload){
                                        </div></th>
                                        <th></th>
                                        <th></th>
+                                       <th></th>
                                    </tr>
                                </thead>`
     }
@@ -73,6 +86,7 @@ function loadFolder(payload){
                             <tr>
                                 <td onclick="getFolder('${payload.folders[i].folder_id}')">&#128193; ${payload.folders[i].name}</td>
                                 <td></td>
+                                <td><button onclick="deleteFolder('${payload.folders[i].folder_id}')">DELETE</button></td>
                                 <td></td>
                             </tr>
         `
@@ -80,13 +94,25 @@ function loadFolder(payload){
     }
     for(let i = 0; i<payload.files.length; i++){
         const tbody = document.createElement('tbody')
-        tbody.innerHTML = `
+        if(payload.files[i].name.slice(-4) === ".pdf"){
+            tbody.innerHTML = `
                             <tr>
                                 <td>${payload.files[i].name}</td>
                                 <td><button onclick="getFile('${payload.files[i].file_id}')">GET</button></td>
                                 <td><button onclick="deleteFile('${payload.files[i].file_id}')">DELETE</button></td>
+                                <td><button onclick="resumePDF('${payload.files[i].file_id}')">RESUME</button></td>
                             </tr>
-        `
+            `
+        }else {
+            tbody.innerHTML = `
+                            <tr>
+                                <td>${payload.files[i].name}</td>
+                                <td><button onclick="getFile('${payload.files[i].file_id}')">GET</button></td>
+                                <td><button onclick="deleteFile('${payload.files[i].file_id}')">DELETE</button></td>
+                                <td></td>
+                            </tr>
+            `
+        }
         worktable.appendChild(tbody)
     }
 }
@@ -97,7 +123,7 @@ function addFolderToFolder(folder){
                         <tr>
                             <td onclick="getFolder('${folder.folder_id}')">&#128193; ${folder.name}</td>
                             <td></td>
-                            <td></td>
+                            <td><button onclick="deleteFolder('${payload.folders[i].folder_id}')">DELETE</button></td>
                         </tr>
     `
     worktable.appendChild(tbody)
