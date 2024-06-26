@@ -1,3 +1,0 @@
-{
-    "packages": ["dotenv", "gradio", "gradio_client"]
-}

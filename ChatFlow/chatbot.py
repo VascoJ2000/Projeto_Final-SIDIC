@@ -6,11 +6,9 @@ load_dotenv('.env')
 
 client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
 model = "gpt-3.5-turbo-0125"
-temperature = 0.7
-max_tokens = 200
 
 
-def chatgpt_response(message_list):
+def chatgpt_response(message_list, max_tokens=200, temperature=0.7):
     completion = client.chat.completions.create(
         model=model,
         messages=message_list,

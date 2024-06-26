@@ -14,6 +14,9 @@ function login(email) {
     }
     navEmail.innerHTML = email
     getChats()
+    getWorkspaces()
+    showSection('workflow')
+    showWorkspace(true)
 }
 
 function logoff() {
@@ -56,7 +59,6 @@ async function postSignup(){
     }).then(res => {
         if(res.ok) {
             console.log(res.text())
-            login(email)
         }
     }).catch(err => console.log(err))
 }

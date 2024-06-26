@@ -29,13 +29,14 @@ def get_folder(folder):
 
         folder_folders = []
         for child in folder_content['folders']:
-            folder_folders.append(str(child))
+            folder_folders.append({'folder_id': str(child['folder_id']), 'name': child['name']})
 
         folder_files = []
         for child in folder_content['files']:
-            folder_files.append(str(child))
+            folder_files.append({'file_id': str(child['file_id']), 'name': child['name']})
 
         res_dict = {
+            'workspace_id': str(folder_content['workspace_id']),
             'folder_id': str(folder_content['_id']),
             'folder_name': folder_content['name'],
             'root_folder': root_folder,
@@ -77,11 +78,11 @@ def create_folder():
         }
         folder_id = db_cli['Folders'].insert_one(query).inserted_id
 
-        if not db_cli['Folders'].update_one({'_id': root_folder}, {'$push': {'folders': folder_id}}).modified_count:
+        if not db_cli['Folders'].update_one({'_id': root_folder}, {'$push': {'folders': {'folder_id': folder_id, 'name': folder_name}}}).modified_count:
             error_status = 404
             raise Exception('Root folder not found')
 
-        res_dict = {'folder_id': str(folder_id), 'root_folder': str(root_folder), 'folder_name': folder_name}
+        res_dict = {'folder_id': str(folder_id), 'root_folder': str(root_folder), 'name': folder_name}
         res_json = json.dumps(res_dict, ensure_ascii=False).encode('utf8')
     except Exception as e:
         return Response(str(e), status=error_status)
@@ -132,7 +133,7 @@ def delete_folder(folder):
             error_status = 500
             raise Exception('Folder could not be deleted')
 
-        if not db_cli['Folders'].update_one({'_id': folder_content['root_folder']}, {'$pull': {'folders': folder_id}}).modified_count:
+        if not db_cli['Folders'].update_one({'_id': folder_content['root_folder']}, {'$pull': {'folders': {'folder_id': folder_id}}}).modified_count:
             error_status = 500
             raise Exception('Folder could not be deleted properly!')
     except Exception as e:

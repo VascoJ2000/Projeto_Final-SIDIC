@@ -7,6 +7,7 @@ const asideChat = document.getElementById('asideChat')
 
 
 function selectChat(chatName) {
+    showWorkspace(true)
     currentChat = chatName
     chatHistory.innerHTML = ''
 }
@@ -67,10 +68,13 @@ function sendMessage() {
 
 function loadChats(payload){
     asideChat.innerHTML = ''
-    console.log(payload)
     for(let i = 0; i<payload.length; i++){
         asideChat.innerHTML += `<li><a href="#" class="d-inline-flex text-white rounded" onclick="getChatMessages('${payload[i].chat_id}')">${payload[i].name}</a></li>`
     }
+}
+
+function loadChat(payload){
+    asideChat.innerHTML += `<li><a href="#" class="d-inline-flex text-white rounded" onclick="getChatMessages('${payload.chat_id}')">${payload.name}</a></li>`
 }
 
 function loadChatMessages(mes){
