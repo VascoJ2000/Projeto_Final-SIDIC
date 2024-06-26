@@ -4,14 +4,7 @@ const bsModalFiles = new bootstrap.Modal(modalFiles, (backdrop = "static")); // 
 const fileInput = document.getElementById('fileInput')
 
 function getFile(file){
-    fetch(url + `/file/${file}`, {
-        method: 'GET',
-    }).then(res => {
-        if(res.ok) {
-            return res.json()
-        }
-    }).then(data => downloadFile(data))
-    .catch(err => console.log(err))
+    window.location.href = `/file/${file}`;
 }
 
 function uploadFile(){
@@ -29,8 +22,15 @@ function uploadFile(){
     .catch(err => console.log(err))
 }
 
-function deleteFile(){
-
+function deleteFile(file){
+    fetch(url + `/file/${file}`, {
+        method: 'DELETE',
+    }).then(res => {
+        if(res.status === 204) {
+            return res.text()
+        }
+    }).then(data => getFolder(currentFolder))
+    .catch(err => console.log(err))
 }
 
 function resumePDF(){
