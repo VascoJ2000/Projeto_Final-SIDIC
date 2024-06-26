@@ -82,7 +82,7 @@ def create_folder():
             error_status = 404
             raise Exception('Root folder not found')
 
-        res_dict = {'folder_id': str(folder_id), 'root_folder': str(root_folder), 'folder_name': folder_name}
+        res_dict = {'folder_id': str(folder_id), 'root_folder': str(root_folder), 'name': folder_name}
         res_json = json.dumps(res_dict, ensure_ascii=False).encode('utf8')
     except Exception as e:
         return Response(str(e), status=error_status)
