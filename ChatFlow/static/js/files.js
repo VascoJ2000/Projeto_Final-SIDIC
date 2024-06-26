@@ -33,22 +33,37 @@ function deleteFile(file){
     .catch(err => console.log(err))
 }
 
-function resumePDF(){
-
-}
-
-function downloadFile(){
-
+function resumePDF(file){
+    fetch(url + `/file/resume/${file}`, {
+        method: 'GET',
+    }).then(res => {
+        if(res.ok) {
+            return res.json()
+        }
+    }).then(data => loadChat(data))
+    .catch(err => console.log(err))
 }
 
 function addFileToFolder(file){
     const tbody = document.createElement('tbody')
-    tbody.innerHTML = `
+    if(file.name.slice(-4) === ".pdf") {
+        tbody.innerHTML = `
                         <tr>
                             <td>${file.name}</td>
                             <td><button onclick="getFile('${file.file_id}')">GET</button></td>
                             <td><button onclick="deleteFile('${file.file_id}')">DELETE</button></td>
+                            <td><button onclick="resumePDF('${file.file_id}')">RESUME</button></td>
                         </tr>
-    `
+        `
+    }else{
+        tbody.innerHTML = `
+                        <tr>
+                            <td>${file.name}</td>
+                            <td><button onclick="getFile('${file.file_id}')">GET</button></td>
+                            <td><button onclick="deleteFile('${file.file_id}')">DELETE</button></td>
+                            <td></td>
+                        </tr>
+        `
+    }
     worktable.appendChild(tbody)
 }

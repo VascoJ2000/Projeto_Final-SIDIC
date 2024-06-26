@@ -73,6 +73,10 @@ function loadChats(payload){
     }
 }
 
+function loadChat(payload){
+    asideChat.innerHTML += `<li><a href="#" class="d-inline-flex text-white rounded" onclick="getChatMessages('${payload.chat_id}')">${payload.name}</a></li>`
+}
+
 function loadChatMessages(mes){
     for (let i = 0; i<mes.length; i++) {
         console.log(mes[i])
