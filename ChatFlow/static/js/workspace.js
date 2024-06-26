@@ -22,13 +22,6 @@ function showWorkspace(space){
         drive.style.display = 'block'
         chatAI.style.display = 'none'
     }
-    worktable.innerHTML = `<thead>
-                               <tr>
-                                   <th>File</th>
-                                   <th>Download</th>
-                                   <th>Delete</th>
-                               </tr>
-                           </thead>`
 }
 
 function getWorkspaces(){

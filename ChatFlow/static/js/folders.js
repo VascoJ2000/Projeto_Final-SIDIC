@@ -41,9 +41,21 @@ function loadFolder(payload){
     currentWorkspace = payload.workspace_id
     currentFolder = payload.folder_id
     if(payload.is_root){
-        folderInfo.innerHTML = `<div>${payload.folder_name} <button onclick="bsModalFolder.show()">New Folder</button></div>`
+        worktable.innerHTML = `<thead>
+                                   <tr>
+                                       <th><div>${payload.folder_name} <button onclick="bsModalFolder.show()">New Folder</button></div></th>
+                                       <th></th>
+                                       <th></th>
+                                   </tr>
+                               </thead>`
     }else{
-        folderInfo.innerHTML = `<div><button onclick="getFolder('${payload.root_folder}')">^</button> ${payload.folder_name}</div>`
+        worktable.innerHTML = `<thead>
+                                   <tr>
+                                       <th><div><button onclick="getFolder('${payload.root_folder}')">^</button> ${payload.folder_name} <button onclick="bsModalFolder.show()">New Folder</button></div></th>
+                                       <th></th>
+                                       <th></th>
+                                   </tr>
+                               </thead>`
     }
     const tbody = document.createElement('tbody')
     console.log(payload.folders)
