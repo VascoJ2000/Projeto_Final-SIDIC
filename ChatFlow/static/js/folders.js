@@ -37,6 +37,25 @@ function addFolder(){
     .catch(err => console.log(err))
 }
 
+function updateFolder(folder){
+    const folder_name = document.getElementById('folderName').value
+    fetch(url + `/folder`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            folder_name: folder_name,
+            folder_id: folder
+        }),
+    }).then(res => {
+        if(res.ok) {
+            return res.json()
+        }
+    }).then(data => getFolder(currentFolder))
+    .catch(err => console.log(err))
+}
+
 function deleteFolder(folder){
     fetch(url + `/folder/${folder}`, {
         method: 'DELETE',

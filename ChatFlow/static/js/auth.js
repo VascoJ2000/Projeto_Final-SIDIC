@@ -67,8 +67,7 @@ async function delLogout(){
     const res = await fetch(url + '/auth', {
         method: 'DELETE',
     }).catch(err => console.log(err))
-
-    location.reload();
+    logoff()
 }
 
 async function getToken(){
