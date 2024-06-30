@@ -12,13 +12,27 @@
   transition: background-color 1s ease 0s;
 }
 
+.main-container p{
+  text-align: justify;
+}
+
 #landing {
   padding: 2rem;
   text-align: center;
 }
 
-#landing h1{
+#landing h1 {
   font-weight: bold;
+}
+
+.img-container {
+  display: flex;
+  column-gap: 2rem;
+  justify-content: center;
+}
+
+#ferramentas img{
+  width: 4rem;
 }
 
 .carousel-inner {
