@@ -13,7 +13,8 @@
 }
 
 .main-container p{
-  text-align: justify;
+    text-align: justify;
+    text-indent: 1rem;
 }
 
 #landing {
