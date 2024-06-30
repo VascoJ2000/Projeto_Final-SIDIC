@@ -74,6 +74,7 @@ function putWorkspace(){
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({
+            workspace_id: currentWorkspace,
             workspace_name: name
         }),
     }).then(res => {
