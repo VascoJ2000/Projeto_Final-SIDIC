@@ -76,7 +76,7 @@ def signup():
             'phone': None,
             'occupation': None,
             'logged_in': False,
-            'verified': False
+            'verified': True
         }
         db_cli['Users'].insert_one(query)
 
