@@ -60,9 +60,10 @@ function deleteWorkspace(workspace){
         method: 'DELETE',
     }).then(res => {
         if(res.ok) {
+            getWorkspaces()
             return res.json()
         }
-    }).then(data => loadWorkspaces(data))
+    }).then(data => console.log(data))
     .catch(err => console.log(err))
 }
 
